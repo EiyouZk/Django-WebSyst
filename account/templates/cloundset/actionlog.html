@@ -1,0 +1,546 @@
+{% extends "clound_base.html" %}
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+
+{% block title %}操作日志{% endblock %}
+
+{% block  script %}
+	$(document).ready(function()
+	{
+		/**
+		 * 替换所有匹配exp的字符串为指定字符串
+		 * @param exp 被替换部分的正则
+		 * @param newStr 替换成的字符串
+		 */
+		String.prototype.replaceAll = function (exp, newStr)
+		{
+			return this.replace(new RegExp(exp, "gm"), newStr);
+		};
+
+		/**
+		 * 原型：字符串格式化
+		 * @param args 格式化参数值
+		 */
+		String.prototype.format = function(args)
+		{
+			var result = this;
+			if (arguments.length < 1) {
+				return result;
+			}
+
+			var data = arguments; // 如果模板参数是数组
+			if (arguments.length == 1 && typeof (args) == "object") {
+				// 如果模板参数是对象
+				data = args;
+			}
+			for ( var key in data) {
+				var value = data[key];
+				if (undefined != value) {
+					result = result.replaceAll("\\{" + key + "\\}", value);
+				}
+			}
+			return result;
+		}
+
+		$("#export").click(function()
+		{
+			var myDate = new Date();			
+			var template1="操作日志-{{user}}-{0}";
+			var filename=template1.format(myDate.toISOString().replace(/[\-\:\.]/g, ""))+'.xls';
+			
+			<!--通过连接了table2excel.js文件来导出的excel文件 -->
+			$(".table2excel").table2excel({
+				exclude: ".noExl",
+				name: "Excel Document Name",
+				filename: filename,
+				fileext: ".xls",
+				exclude_img: true,
+				exclude_links: true,
+				exclude_inputs: true
+			});
+		});
+
+
+        //IE浏览器导出Excel
+        function HtmlExportToExcelForIE(tableid, filename) {
+            try {
+                var winname = window.open('', '_blank', 'top=10000');
+                var strHTML = document.getElementById(tableid).innerHTML;
+
+                winname.document.open('application/vnd.ms-excel', 'export excel');
+                winname.document.writeln(strHTML);
+                winname.document.execCommand('saveas', '', filename + '.xls');
+                winname.close();
+
+            } catch (e) {
+                alert(e.description);
+            }
+        }
+        //非IE浏览器导出Excel
+        var HtmlExportToExcelForEntire = (function()
+		{
+            var uri = 'data:application/vnd.ms-excel;base64,',
+        	template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>',
+        	base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) },
+        	format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+
+            return function(table, name) {
+                if (!table.nodeType) { table = document.getElementById(table); }
+                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                document.getElementById("dlink").href = uri + base64(format(template, ctx));
+                document.getElementById("dlink").download = name + ".xls";
+                document.getElementById("dlink").click();
+            }
+        })()
+
+	});
+
+	var tag=1;
+    function sortNumberASzh(a, b)	//拼音排序
+    {
+        return a.localeCompare(b,'zh');
+    }
+    function sortNumberDesczh(a, b)
+    {
+        return b.localeCompare(a,'zh');
+    }
+
+    function SortTable(obj)
+	{
+		var td0s=document.getElementsByName("td0");
+        var td1s=document.getElementsByName("td1");
+        var td2s=document.getElementsByName("td2");
+        var td3s=document.getElementsByName("td3");
+		var td4s=document.getElementsByName("td4");
+
+		var tdArray0=[];
+        var tdArray1=[];
+        var tdArray2=[];
+        var tdArray3=[];
+		var tdArray4=[];
+
+         for(var i=0;i<td0s.length;i++){
+            tdArray0.push((td0s[i].innerHTML));
+        }
+        for(var i=0;i<td1s.length;i++){
+            tdArray1.push((td1s[i].innerHTML));
+        }
+        for(var i=0;i<td2s.length;i++){
+            tdArray2.push((td2s[i].innerHTML));
+        }
+        for(var i=0;i<td3s.length;i++){
+            tdArray3.push((td3s[i].innerHTML));
+        }
+		for(var i=0;i<td4s.length;i++){
+            tdArray4.push((td4s[i].innerHTML));
+        }
+
+        var tds=document.getElementsByName("td"+obj.id.substr(2,1));
+        var columnArray=[];
+        for(var i=0;i<tds.length;i++){
+            columnArray.push((tds[i].innerHTML));
+        }
+
+        var orginArray=[];
+        for(var i=0;i<columnArray.length;i++){
+            orginArray.push(columnArray[i]);
+        }
+
+        if(obj.className=="as"){
+            columnArray.sort(sortNumberASzh);               //排序后的新值
+            obj.className="desc";
+        }else{
+            columnArray.sort(sortNumberDesczh);             //排序后的新值
+            obj.className="as";
+        }
+
+        for(var i=0;i<columnArray.length;i++){
+            for(var j=0;j<orginArray.length;j++){
+                if(orginArray[j]==columnArray[i]){
+                    document.getElementsByName("td0")[i].innerHTML=tdArray0[j];
+                    document.getElementsByName("td1")[i].innerHTML=tdArray1[j];
+                    document.getElementsByName("td2")[i].innerHTML=tdArray2[j];
+                    document.getElementsByName("td3")[i].innerHTML=tdArray3[j];
+					document.getElementsByName("td4")[i].innerHTML=tdArray4[j];
+                    orginArray[j]=null;
+                    break;
+                }
+            }
+        }
+    }
+	
+	var pageSize = 10;
+    var curPage=0;        
+    var lastPage;       
+    var direct=0;       
+    var len;            
+    var page;            
+    var begin;
+    var end;
+	
+	$(document).ready(function display()
+	{
+		len =$("#actionlog tr").length - 1;
+        page=len % pageSize==0 ? len/pageSize : Math.floor(len/pageSize)+1;
+		// alert("page==="+page);
+				curPage=1;    // 设置当前为第一页
+		displayPage(1);//显示第一页
+
+		<!--document.getElementById("btn0").innerHTML="当前 " + curPage + "/" + page + " 页    每页 ";-->
+		document.getElementById("btn0").innerHTML="当前 " + curPage + "/" + page + " 页    ";
+		document.getElementById("sjzl").innerHTML="共" + Math.ceil(len/pageSize) + "页";
+		document.getElementById("pageSize").value = pageSize;
+
+		createNumBtn(page,curPage);
+
+		$("#btn1").click(function firstPage()
+		{
+		    curPage=1;
+		    direct = 0;
+		    displayPage();
+		});
+		$("#btn2").click(function frontPage(){
+		    direct=-1;
+		    displayPage();
+		});
+		$("#btn3").click(function nextPage(){
+		    direct=1;
+		    displayPage();
+		});
+		$("#btn4").click(function lastPage(){
+		    curPage=page;
+		    direct = 0;
+		    displayPage();
+		});
+		$("#btn5").click(function changePage()
+        {
+		    curPage=document.getElementById("changePage").value * 1;
+		    if (!/^[1-9]\d*$/.test(curPage)) {
+		        alert("请输入正整数");
+		        return ;
+		    }
+		    if (curPage > page) 
+			{
+		        alert("超出页面数据");
+		        return ;
+		    }
+		    direct = 0;
+		    displayPage();
+		});
+
+                
+		$("#pageSizeSet").click(function setPageSize()
+		{
+		    pageSize = document.getElementById("pageSize").value;
+		    if (!/^[1-9]\d*$/.test(pageSize)) {
+		        alert("请输入正整数");
+		        return ;
+		    }
+		    len =$("#mytable tr").length - 1;
+		    page=len % pageSize==0 ? len/pageSize : Math.floor(len/pageSize)+1;
+		    curPage=1;
+		     direct=0;
+		     firstPage();
+		});
+
+        $("#changePage").keydown(function(e)
+        {
+           if (e.keyCode == 13)
+            {
+                curPage=document.getElementById("changePage").value * 1;
+                if (!/^[1-9]\d*$/.test(curPage)) {
+                    alert("请输入正整数");
+                    return ;
+                }
+                if (curPage > page)
+                {
+                    alert("超出页面数据");
+                    return ;
+                }
+                direct = 0;
+                displayPage();
+            }
+        });
+
+        $("#controlAll").click(function()
+		{
+			var checklist = document.getElementsByName("selectdel");
+            var startindex = (curPage-1)*10;
+			if(document.getElementById("controlAll").checked)
+			{
+			   for(var i=startindex;i<(startindex+10);i++)
+			   {
+				  checklist[i].checked = 1;
+			   }
+			}
+			else
+			{
+			  for(var j=0;j<checklist.length;j++)
+			  {
+				 checklist[j].checked = 0;
+			  }
+			}
+		});
+	});
+
+	function firstPage()
+	{
+	    curPage=1;
+	    direct = 0;
+	    displayPage();
+	}
+
+	//请求数据页面跳转方法
+	function goPage(btn)
+	{
+		curPage= Number(btn);
+		direct = 0;
+	    displayPage();
+	}
+
+	//创建数字按钮
+    function createNumBtn(totalpage,page)
+	{
+        //page是页面index从0开始，这里的page加减一要注意
+        var str='';
+		//此页左边右边各pager.numBtnCount个数字按钮
+		//此页左边有pager.numBtnCount页 page页码从0开始
+        for(var m=0;m<totalpage;m++)
+		{
+			if(m>(page-5) && m<(page+5))
+			{
+				if(m==page-1)
+				{
+					str+='<button data-page="'+(m+1)+'" style="color:red;">'+(m+1)+'</button>';
+				}
+				else
+				{
+					str+='<button data-page="'+(m+1)+'">'+(m+1)+'</button>';
+				}
+			}
+		}
+
+        $('.num-box-nick').html(str);
+
+        //每个btn绑定请求数据页面跳转方法
+        $('.num-box-nick'+' button').each(function(i,v){
+            $(this).click(function(){
+                goPage(v.getAttribute('data-page'));
+            });
+        });
+    }
+
+
+
+	function displayPage()
+	{
+		if(curPage <=1 && direct==-1)
+		{
+		    direct=0;
+		    alert("已经是第一页了");
+		    return;
+		} else if (curPage >= page && direct==1)
+		{
+		    direct=0;
+		    alert("已经是最后一页了");
+		    return ;
+		}
+
+		lastPage = curPage;
+
+		<!-- // 修复当len=1时，curPage计算得0的bug -->
+		if (len > pageSize)
+		{
+		    curPage = ((curPage + direct + len) % len);
+		} else
+		{
+		    curPage = 1;
+		}
+
+		createNumBtn(page,curPage);
+
+		<!--document.getElementById("btn0").innerHTML="当前 " + curPage + "/" + page + " 页    每页 ";-->
+		document.getElementById("btn0").innerHTML="当前 " + curPage + "/" + page + " 页";
+
+
+		<!-- 起始记录号 -->
+		begin=(curPage-1)*pageSize + 1;
+		<!-- // 末尾记录号 -->
+		end = begin + 1*pageSize - 1;
+
+		if(end > len ) end=len;
+		$("#actionlog tr").hide();
+		<!-- // 首先，设置这行为隐藏 -->
+		$("#actionlog tr").each(function(i)
+		{
+			<!-- // 然后，通过条件判断决定本行是否恢复显示 -->
+			<!-- //显示begin<=x<=end的记录 -->
+		    if((i>=begin && i<=end) || i==0 )
+		        $(this).show();
+		});
+	}
+
+	function checkSearchDate()
+    {
+        var fromdate = document.getElementById('s_time_from').value;
+        var todate = document.getElementById('s_time_to').value;
+
+        if('' == fromdate || '' == todate || new Date(fromdate).getTime() > new Date(todate).getTime())
+        {
+            alert("告警时间选择不合法，请重新选择");
+            window.location.reload();
+        }
+    }
+
+    function getTimeStr(date)
+    {
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+
+        return date.getFullYear()+'-'+month+'-'+strDate;
+    }
+
+	window.onload = function(){
+        var todate  = new Date();
+        var formday = new Date(Date.parse(todate) - 7*24*60*60*1000);
+
+        var toDate = getTimeStr(todate);
+        var fromDate = getTimeStr(formday);
+
+        document.getElementById('s_time_from').value = fromDate;
+        document.getElementById('s_time_to').value = toDate;
+    }
+
+{% endblock %}
+
+{% block content %}	
+    <div class="contentsettingzk" >
+		<div class="setleft">
+			<div class="settingbtn" ><a style="color: rgb(255, 255, 255);" href="{% url 'notice' %}">历史报警</a></div>
+			<div style="background: rgb(58, 90, 136);" class="settingbtn"><a style="color: rgb(255, 255, 255);" href="{% url 'actionlog' %}">操作日志</a></div>
+		</div>
+		<div style="min-height:100%;padding-left:16%;background:#f3f7f9;overflow:hidden;">
+			<div style="background:#ffffff;margin: 0px 18px 0px 20px;">
+				<div style="min-height: 900px;padding-top:10px;border-bottom: 1px rgb(230, 189, 189) solid;padding-bottom:10px;">
+					<div style="margin:10px;padding-top: 20px;">
+						<form action="." method="post">{% csrf_token %}
+						<table style="padding:15px 15px 18px 18px; width: 100%;font-size: 18px;color: #021616;">
+							<tr>
+								<td width="40px;"/>
+								<td width="70px;">服务器:</td>
+								<td>
+									<select name="server" class="select">
+										<option value="all" {% if selectedserver = 'all' %} selected="selected" {% endif %}>全部</option>
+										{% for server in serverinfo %}
+											<option {% if selectedserver == server.servername %} selected="selected" {% endif %} value="{{server.servername}}">{{server.servername}}</option>
+										{% endfor %}
+									</select>
+								</td>
+								<td width="40px;"/>
+								<td width="90px;">操作模块：</td>
+								<td>
+									<select name="model" class="select">
+										<option value="all" {% if selectedmodel = 'all' %} selected="selected" {% endif %}>全部模块</option>
+										<option value="服务器体检" {% if selectedmodel = '服务器体检' %} selected="selected" {% endif %}>服务器体检</option>
+                                        <option value="系统账号优化" {% if selectedmodel = '系统账号优化' %} selected="selected" {% endif %}>系统账号优化</option>
+                                        <option value="目录权限优化" {% if selectedmodel = '目录权限优化' %} selected="selected" {% endif %}>目录权限优化</option>
+                                        <option value="系统服务优化" {% if selectedmodel = '系统服务优化' %} selected="selected" {% endif %}>系统服务优化</option>
+                                        <option value="注册表优化" {% if selectedmodel = '注册表优化' %} selected="selected" {% endif %}>注册表优化</option>
+                                        <option value="启动项优化" {% if selectedmodel = '启动项优化' %} selected="selected" {% endif %}>启动项优化</option>
+										<option value="系统防火墙" {% if selectedmodel = '系统防火墙' %} selected="selected" {% endif %}>系统防火墙</option>
+										<option value="网络防火墙" {% if selectedmodel = '网络防火墙' %} selected="selected" {% endif %}>网络防火墙</option>
+                                        <option value="端口保护" {% if selectedmodel = '端口保护' %} selected="selected" {% endif %}>端口保护</option>
+                                        <option value="超级白名单" {% if selectedmodel = '超级白名单' %} selected="selected" {% endif %}>超级白名单</option>
+                                        <option value="超级黑名单" {% if selectedmodel = '超级黑名单' %} selected="selected" {% endif %}>超级黑名单</option>
+									</select>
+								</td>
+								<td width="40px;"/>
+								<td width="90px;">操作时间：</td>
+								<td>
+									<input type="text" name="startDateStr" {% if startday %} value="{{startday}}" {% endif %} readonly="readonly" id="s_time_from" style="width:100px;border:1px solid #D5D2D2;" onClick="WdatePicker({el:this,dateFmt:'yyyy-MM-dd'})" onblur="checkSearchDate();"/>至<input type="text" name="endDateStr" {% if endday %} value="{{endday}}" {% endif %} readonly="readonly" id="s_time_to" style="width:100px;border:1px solid #D5D2D2;" onClick="WdatePicker({el:this,dateFmt:'yyyy-MM-dd'})" onblur="checkSearchDate();"/>
+								</td>
+								<td width="40px;"/>
+								
+								<td>
+									<input class="btn_blue_a" type="submit" style="padding-top: 0px;font-size: 16px;font-weight: unset;" value="查询" />
+								</td>
+								<td>
+                                    <input class="btn_blue_a" name="delselected" type="submit" style="font-size: 16px;padding-top: 0px;font-weight: unset;" value="删除勾选" />
+                                </td>
+								<td>
+									<div><a id="export" class="btn_blue_a" style="padding-top: 0px;font-size: 16px;">导出</a></div>
+								</td>
+                                <td>
+									<a id="dlink" style="display: none;"></a>
+								</td>
+							</tr>
+						</table>
+						<div id="loadgif" class="white_content" style="width:unset;top: 30%;left: 50%;height:unset;box-shadow:unset;">
+                            <img alt="加载中..." title="加载中..." src="{% static 'images/loading2.gif' %}" style="width:50px;"/>
+                        </div>
+						<div style="width:100%;border:1px #728698  solid;margin-top: 20px;">
+							<div id="actiondiv" class="border">
+									{% if actionlogs %}
+										<table class="table2excel" id="actionlog" width="100%" style="line-height: 56px;">
+												<tr style="background: antiquewhite;font-size: 20px;border-bottom: 1px rgb(230, 189, 189) solid;">
+													<td class="noExl" width="5%" id="th0" style="padding-left: 15px;"><div><input id="controlAll" name="controlAll" type="checkbox"/>全选</div></td>
+													<td width="15%" id="th1" onclick="SortTable(this)" class="as"><a href="#" >服务器</a></td>
+													<td width="15%" id="th2" onclick="SortTable(this)" class="as"><a href="#" >模块</a></td>
+													<td width="10%" id="th3" onclick="SortTable(this)" class="as"><a href="#" >日期</a></td>
+													<td width="20%" id="th4">操作说明</td>
+												</tr>
+											{% for actionlog in actionlogs %}
+												<tr {% if not forloop.last %}style="border-bottom: 1px rgb(230, 189, 189) solid;" {% endif %}>
+													<td class="noExl" name="td0" style="padding-left: 15px;"><input type="checkbox" name="selectdel" value="{{actionlog.id}}"></input></td>
+													<td name="td1">{{actionlog.servername}}</td>
+													<td name="td2">{{actionlog.actionmodel}}</td>
+													<td name="td3">{{actionlog.date}}</td>
+													<td name="td4"><input type="text" class="inputzk" style="width: 100%;border: none;background: none;overflow: hidden;text-overflow: ellipsis;" value="{{actionlog.actioncontent}}" disabled="disabled" title="{{actionlog.actioncontent}}"/></td>
+												</tr>											
+											{% endfor %}											
+										</table>										
+									{% else %}
+										<span style="padding-left:30px;margin:10px;">暂无任何相关的操作日志记录</span>
+									{% endif %}
+							</div>							
+						</div>
+                        </form>
+                        {% if actionlogs %}
+                        <div style="padding-top: 12px;text-align:center;">
+                            <a  href="#" id="btn1" style="border: 1px solid #cccccc;padding: 5px;">首页</a>
+							<a  href="#" id="btn2" style="border: 1px solid #cccccc;padding: 5px;">上一页</a>
+							<a id="btn0" style="display:none;"></a>
+							<span class="num-box-nick">
+							</span>
+							<input id="pageSize" type="text" size="1" maxlength="2" value="getDefaultValue()" style="border: unset;display:none;"/>
+							<!--<a> 条 </a>-->
+							<!--<a href="#" id="pageSizeSet">设置</a>-->
+
+
+							<a  href="#" id="btn3" style="border: 1px solid #cccccc;padding: 5px;">下一页</a>
+                            <a  href="#" id="btn4" style="border: 1px solid #cccccc;padding: 5px;">尾页</a>
+							<a id="sjzl"></a>
+							<a>转到 </a>
+							<input id="changePage" type="number" onkeyup="this.value=this.value.replace(/\D/g,'')"  onafterpaste="this.value=this.value.replace(/\D/g,'')" size="1" min="1" maxlength="4" style="padding: 5px;width: 45px;border: 1px solid #cccccc;"/>
+							<a>页</a>
+							<a href="#" id="btn5">跳转</a>
+						</div>
+                        {% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div style="overflow:hidden; padding-left:16%;padding-top:10px;padding-right:10px;">
+			
+		</div>
+	</div>
+    
+{% endblock %}

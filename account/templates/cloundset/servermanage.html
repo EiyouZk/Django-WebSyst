@@ -1,0 +1,594 @@
+{% extends "clound_base.html" %}
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+
+{% block title %}设置中心{% endblock %}
+
+{% block  script %}
+	$(document).ready(function()
+	{
+		{% for server in serverinfo %}
+			$("#remark_{{server.id}}").keydown(function(e)
+			{
+			   if (e.keyCode == 13)
+			   {
+					var remark = document.getElementById("remark_{{server.id}}").value;
+					$.get("../addremark",{'obj':'addremark','remark':remark,'remarkserverid':{{server.id}}}, function(ret)
+					{
+						if(ret == 'success')
+						{
+							alert('添加备注成功');
+						}
+						else
+						{
+							alert('添加备注失败');
+						}
+						window.location.reload();
+					})
+			   }
+			});
+
+			$("#add_remark_{{server.id}}").click(function()
+			{ 
+				var remark = document.getElementById("remark_{{server.id}}").value; 
+				$.get("../addremark",{'obj':'addremark','remark':remark,'remarkserverid':{{server.id}}}, function(ret)
+				{
+					if(ret == 'success')
+					{
+						alert('添加备注成功');
+					}
+					else
+					{
+						alert('添加备注失败');
+					}
+					window.location.reload();
+				})
+			});
+			
+		{% endfor %}
+
+		/**
+		 * 替换所有匹配exp的字符串为指定字符串
+		 * @param exp 被替换部分的正则
+		 * @param newStr 替换成的字符串
+		 */
+		String.prototype.replaceAll = function (exp, newStr) {
+			return this.replace(new RegExp(exp, "gm"), newStr);
+		};
+
+		/**
+		 * 原型：字符串格式化
+		 * @param args 格式化参数值
+		 */
+		String.prototype.format = function(args) {
+			var result = this;
+			if (arguments.length < 1) {
+				return result;
+			}
+
+			var data = arguments; // 如果模板参数是数组
+			if (arguments.length == 1 && typeof (args) == "object") {
+				// 如果模板参数是对象
+				data = args;
+			}
+			for ( var key in data) {
+				var value = data[key];
+				if (undefined != value) {
+					result = result.replaceAll("\\{" + key + "\\}", value);
+				}
+			}
+			return result;
+		}
+
+		function downloadFile(url)
+		{
+			try{
+				var elemIF = document.createElement("iframe");
+				elemIF.src = url;
+				elemIF.style.display = "none";
+				document.body.appendChild(elemIF);
+			}catch(e){
+
+			}
+		}
+
+		$("#maketestdata").click(function()
+		{
+			$.get("../maketestdata",{'obj':'make'}, function(ret)
+			{
+				if(ret == 'success')
+				{
+					alert('生成测试数据成功');
+                    window.location.reload();
+				}
+				else
+				{
+					alert('生成测试数据失败');
+				}
+
+			})
+		});
+
+        $("#deltestdata").click(function()
+		{
+			$.get("../maketestdata",{'obj':'del'}, function(ret)
+			{
+				if(ret == 'success')
+				{
+					alert('删除测试数据成功');
+					window.location.reload();
+				}
+				else
+				{
+					alert('生成测试数据失败');
+				}
+
+			})
+		});
+
+        <!--$("#serchid").keydown(function(e)-->
+		<!--{-->
+           <!--if (e.keyCode == 13)-->
+		   <!--{-->
+				<!--document.getElementById('searchform').submit();-->
+           <!--}-->
+		<!--});-->
+	});
+
+    function keyup_submit(e)
+    {
+        var evt = window.event || e;
+        if (evt.keyCode == 13)
+        {
+            document.getElementById('searchform').submit();
+        }
+    }
+	var tag=1;
+	function sortNumberASzh(a, b)	//拼音排序
+	{
+		return a.localeCompare(b,'zh');
+	}
+	function sortNumberDesczh(a, b)
+	{
+		return b.localeCompare(a,'zh');
+	}
+
+	function SortTable(obj)
+	{
+		var td0s=document.getElementsByName("td0");
+		var td1s=document.getElementsByName("td1");
+		var td2s=document.getElementsByName("td2");
+		var td3s=document.getElementsByName("td3");
+		var td4s=document.getElementsByName("td4");
+		var td5s=document.getElementsByName("td5");
+		var td6s=document.getElementsByName("td6");
+		var td7s=document.getElementsByName("td7");
+		var td8s=document.getElementsByName("td8");
+		var td9s=document.getElementsByName("td9");
+		
+		var tdArray0=[];
+		var tdArray1=[];
+		var tdArray2=[];
+		var tdArray3=[];
+		var tdArray4=[];
+		var tdArray5=[];
+		var tdArray6=[];
+		var tdArray7=[];
+		var tdArray8=[];
+		var tdArray9=[];
+		
+		for(var i=0;i<td0s.length;i++){
+			tdArray0.push((td0s[i].innerHTML));
+		}
+		for(var i=0;i<td1s.length;i++){
+			tdArray1.push((td1s[i].innerHTML));
+		}
+		for(var i=0;i<td2s.length;i++){
+			tdArray2.push((td2s[i].innerHTML));
+		}
+		for(var i=0;i<td3s.length;i++){
+			tdArray3.push((td3s[i].innerHTML));
+		}
+		for(var i=0;i<td4s.length;i++){
+			tdArray4.push((td4s[i].innerHTML));
+		}
+		for(var i=0;i<td5s.length;i++){
+			tdArray5.push(td5s[i].innerHTML);
+		}			
+		for(var i=0;i<td6s.length;i++){
+			tdArray6.push((td6s[i].innerHTML));
+		}
+		for(var i=0;i<td7s.length;i++){
+			tdArray7.push((td7s[i].innerHTML));
+		}
+		for(var i=0;i<td8s.length;i++){
+			tdArray8.push((td8s[i].innerHTML));
+		}
+		for(var i=0;i<td9s.length;i++){
+			tdArray9.push((td9s[i].innerHTML));
+		}
+		
+		var tds=document.getElementsByName("td"+obj.id.substr(2,1));
+		var columnArray=[];
+		for(var i=0;i<tds.length;i++){
+			columnArray.push((tds[i].innerText));
+		}
+		
+		var orginArray=[];
+		for(var i=0;i<columnArray.length;i++){
+			orginArray.push(columnArray[i]);
+		}
+		
+		if(obj.className=="as"){
+			columnArray.sort(sortNumberASzh);               //排序后的新值
+			obj.className="desc";
+		}else{
+			columnArray.sort(sortNumberDesczh);             //排序后的新值
+			obj.className="as";
+		}
+
+		for(var i=0;i<columnArray.length;i++){
+			for(var j=0;j<orginArray.length;j++){
+				if(orginArray[j]==columnArray[i]){
+					document.getElementsByName("td0")[i].innerHTML=tdArray0[j];
+					document.getElementsByName("td1")[i].innerHTML=tdArray1[j];
+					document.getElementsByName("td2")[i].innerHTML=tdArray2[j];
+					document.getElementsByName("td3")[i].innerHTML=tdArray3[j];
+					document.getElementsByName("td4")[i].innerHTML=tdArray4[j];
+					document.getElementsByName("td5")[i].innerHTML=tdArray5[j];
+					document.getElementsByName("td6")[i].innerHTML=tdArray6[j];
+					document.getElementsByName("td7")[i].innerHTML=tdArray7[j];
+					document.getElementsByName("td8")[i].innerHTML=tdArray8[j];
+					document.getElementsByName("td9")[i].innerHTML=tdArray9[j];
+					
+					orginArray[j]=null;
+					break;
+				}
+			}
+		}
+	}
+	
+	var pageSize = 10;
+    var curPage=0;        
+    var lastPage;       
+    var direct=0;       
+    var len;            
+    var page;            
+    var begin;
+    var end;
+	
+	$(document).ready(function display()
+	{
+		len =$("#serverstable tr").length - 1;
+        page=len % pageSize==0 ? len/pageSize : Math.floor(len/pageSize)+1;
+		// alert("page==="+page);
+				curPage=1;    // 设置当前为第一页
+		displayPage(1);//显示第一页
+
+		<!--document.getElementById("btn0").innerHTML="当前 " + curPage + "/" + page + " 页    每页 ";-->
+		document.getElementById("btn0").innerHTML="当前 " + curPage + "/" + page + " 页    ";
+		document.getElementById("sjzl").innerHTML="共" + Math.ceil(len/pageSize) + "页";
+		document.getElementById("pageSize").value = pageSize;
+
+		createNumBtn(page,curPage);
+
+		$("#btn1").click(function firstPage()
+		{
+		    curPage=1;
+		    direct = 0;
+		    displayPage();
+		});
+		$("#btn2").click(function frontPage(){
+		    direct=-1;
+		    displayPage();
+		});
+		$("#btn3").click(function nextPage(){
+		    direct=1;
+		    displayPage();
+		});
+		$("#btn4").click(function lastPage(){
+		    curPage=page;
+		    direct = 0;
+		    displayPage();
+		});
+		$("#btn5").click(function changePage(){
+		    curPage=document.getElementById("changePage").value * 1;
+		    if (!/^[1-9]\d*$/.test(curPage)) {
+		        alert("请输入正整数");
+		        return ;
+		    }
+		    if (curPage > page) 
+			{
+		        alert("超出页面数据");
+		        return ;
+		    }
+		    direct = 0;
+		    displayPage();
+		});
+
+                
+		$("#pageSizeSet").click(function setPageSize()
+		{
+		    pageSize = document.getElementById("pageSize").value;
+		    if (!/^[1-9]\d*$/.test(pageSize)) {
+		        alert("请输入正整数");
+		        return ;
+		    }
+		    len =$("#mytable tr").length - 1;
+		    page=len % pageSize==0 ? len/pageSize : Math.floor(len/pageSize)+1;
+		    curPage=1;
+		     direct=0;
+		     firstPage();
+		});
+
+        $("#changePage").keydown(function(e)
+        {
+           if (e.keyCode == 13)
+            {
+                curPage=document.getElementById("changePage").value * 1;
+                if (!/^[1-9]\d*$/.test(curPage)) {
+                    alert("请输入正整数");
+                    return ;
+                }
+                if (curPage > page)
+                {
+                    alert("超出页面数据");
+                    return ;
+                }
+                direct = 0;
+                displayPage();
+            }
+        });
+
+        $("#controlAll").click(function()
+		{
+			var checklist = document.getElementsByName ("selectdel");
+            var startindex = (curPage-1)*10;
+			if(document.getElementById("controlAll").checked)
+			{
+			   for(var i=startindex;i<(startindex+10);i++)
+			   {
+				  checklist[i].checked = 1;
+			   }
+			 }else{
+			  for(var j=0;j<checklist.length;j++)
+			  {
+				 checklist[j].checked = 0;
+			  }
+			 }
+		});
+	});
+
+	function firstPage()
+	{
+	    curPage=1;
+	    direct = 0;
+	    displayPage();
+	}
+
+	//请求数据页面跳转方法
+	function goPage(btn)
+	{
+		curPage= Number(btn);
+		direct = 0;
+	    displayPage();
+	}
+
+	//创建数字按钮
+    function createNumBtn(totalpage,page)
+	{
+        //page是页面index从0开始，这里的page加减一要注意
+        var str='';
+		//此页左边右边各pager.numBtnCount个数字按钮
+		//此页左边有pager.numBtnCount页 page页码从0开始
+        for(var m=0;m<totalpage;m++)
+		{
+			if(m>(page-5) && m<(page+5))
+			{
+				if(m==page-1)
+				{
+					str+='<button data-page="'+(m+1)+'" style="color:red;">'+(m+1)+'</button>';
+				}
+				else
+				{
+					str+='<button data-page="'+(m+1)+'">'+(m+1)+'</button>';
+				}
+			}
+		}
+
+        $('.num-box-nick').html(str);
+
+        //每个btn绑定请求数据页面跳转方法
+        $('.num-box-nick'+' button').each(function(i,v){
+            $(this).click(function(){
+                goPage(v.getAttribute('data-page'));
+            });
+        });
+    }
+
+
+
+	function displayPage()
+	{
+		if(curPage <=1 && direct==-1)
+		{
+		    direct=0;
+		    alert("已经是第一页了");
+		    return;
+		} else if (curPage >= page && direct==1)
+		{
+		    direct=0;
+		    alert("已经是最后一页了");
+		    return ;
+		}
+
+		lastPage = curPage;
+
+		<!-- // 修复当len=1时，curPage计算得0的bug -->
+		if (len > pageSize)
+		{
+		    curPage = ((curPage + direct + len) % len);
+		} else
+		{
+		    curPage = 1;
+		}
+
+		createNumBtn(page,curPage);
+
+		<!--document.getElementById("btn0").innerHTML="当前 " + curPage + "/" + page + " 页    每页 ";-->
+		document.getElementById("btn0").innerHTML="当前 " + curPage + "/" + page + " 页";
+
+
+		<!-- 起始记录号 -->
+		begin=(curPage-1)*pageSize + 1;
+		<!-- // 末尾记录号 -->
+		end = begin + 1*pageSize - 1;
+
+		if(end > len ) end=len;
+		$("#serverstable tr").hide();
+		<!-- // 首先，设置这行为隐藏 -->
+		$("#serverstable tr").each(function(i)
+		{
+			<!-- // 然后，通过条件判断决定本行是否恢复显示 -->
+			<!-- //显示begin<=x<=end的记录 -->
+		    if((i>=begin && i<=end) || i==0 )
+		        $(this).show();
+		});
+	}
+
+{% endblock %}
+{% block content %}
+
+    <div class="contentsettingzk" >
+		<div class="setleft">
+			<div style="background: rgb(58, 90, 136);" class="settingbtn" ><a style="color: rgb(255, 255, 255);" href="{% url 'servermanage' %}">服务器管理</a></div>
+			<div class="settingbtn"><a style="color: rgb(255, 255, 255);" href="{% url 'groupmanage' %}">服务器分组</a></div>
+		</div>
+		<div class="setright">
+			<div style="background:#ffffff;height:85%;margin:15px;">
+				<form id="searchform" name="serverlist" action="." method="post">{% csrf_token %}
+				<div class="fwqlb_cz" style="overflow:visible;height:66px;background: #436fac;">
+                    <div  style="float:left;">
+                        <input class=" " name="delselected" type="submit" style="margin-left: 10px;margin-top: 24px;border-radius: 6px;height: 26px;width: 85px;padding-top: 3px;background: white;color: #436fac;border: none;font-weight: unset;" value="删除勾选" />
+                    </div>
+                    <div style="float:left;">
+						<a id="maketestdata" href="#" style="margin-left: 30px;margin-top: 24px;border-radius: 6px;height: 26px;width: 100px;padding-top: 3px;background: white;color: #436fac;float: left;padding-left: 10px;">添加测试数据</a>
+					</div>
+                    <div style="float:left;">
+						<a id="deltestdata" href="#" style="margin-left: 30px;margin-top: 24px;border-radius: 6px;height: 26px;width: 100px;padding-top: 3px;background: white;color: #436fac;float: left;padding-left: 10px;">删除测试数据</a>
+					</div>
+					<div class="fwq_search_ip" style="position: relative">
+						<input id='serchid' name="searchname" placeholder="输入服务器名" type="text" class="input_search_ip" maxlength="30" style="width:200px;margin-top: 13px;padding: 0px 0px 0px 30px;" value="{{searchname}}" onkeydown="keyup_submit(event);" autocomplete="off">
+						<input type="submit" style="float: right;margin-left: 10px;margin-top: 13px;border-radius: 10px;height: 24px;width: 64px;padding-top: 3px;background: white;color: #436fac;border: none;" value="搜索"/>
+					</div>
+				</div>
+				{% if serverinfo%}
+					<table id="serverstable" width=100% style="line-height: 56px;">
+						<tr style="background: antiquewhite;font-size: 20px;border-bottom: 1px rgb(230, 189, 189) solid;">
+							<td id="th0" style="padding-left:30px;"><div style=""><input id="controlAll" name="controlAll" type="checkbox"/> 全选</div></td>
+							<td id="th1" onclick="SortTable(this)" class="as"><a href="#" >服务器</a></td>
+							<td id="th2" onclick="SortTable(this)" class="as"><a href="#" >IP地址</a></td>
+							<td id="th3">安全策略设置</td>
+							<td id="th4" onclick="SortTable(this)" class="as"><a href="#" >上次登录</a></td>
+							<td id="th5" onclick="SortTable(this)" class="as"><a href="#" >所在分组</a></td>
+							<td id="th6" onclick="SortTable(this)" class="as"><a href="#" >服务器状态</a></td>
+							<td id="th7" onclick="SortTable(this)" class="as"><a href="#" >锁定状态</a></td>
+							<td id="th8">报警</td>
+							<td id="th9">备注</td>
+						</tr>
+						{% for server in serverinfo %}
+							<tr style="border-bottom: 1px rgb(230, 189, 189) solid;">
+								<td name="td0" style="padding-left:50px;"><input type="checkbox" name="selectdel" value="{{server.id}}"></input></td>
+								<td name="td1"><a target="_blank" href="../singleserver/?serverid={{server.id}}">{{server.servername}}</a></td>
+								<td name="td2">{{server.serverip}}</td>
+								<td name="td3">{% if server.strategyname %}<input id="strategyname_{{server.id}}" type="text" class="inputzk" style="width: 150px;border: none;background: none;overflow: hidden;text-overflow: ellipsis;" value="{{server.strategyname}}" disabled="disabled" title="{{server.strategyname}}"/> {% else %} 自定义模版 {% endif %}</td>
+								<td name="td4">{{server.lastlogin}}</td>
+								<td name="td5">
+									{% if server.servergroup == 'Un_Group' or server.servergroup == '' %}
+										未分组
+									{% endif %}
+									{% for servergroup in servergroups %}
+										{% if servergroup.groupcode == server.servergroup %}
+											{{servergroup.groupname}}
+										{% endif %}
+									{% endfor %}
+								</td>
+								<td name="td6">
+                                    {% if 'Normal' == server.serverstatus %}
+									    运行正常
+									{% elif 'Unusual' == server.serverstatus %}
+                                        出现异常
+                                    {% elif 'Invade' == server.serverstatus %}
+                                        已被入侵
+                                    {% endif %}
+								</td>
+								<td name="td7"><a href="#">已锁定</a></td>
+								<td name="td8">上周内收到操作攻击一次</td>
+								<td name="td9" style="overflow: hidden;text-overflow: ellipsis;">
+									{% if '' != server.serverremark %}
+										<a onclick="ShowDiv('addremark_{{server.id}}','fade')" title="点击添加备注" style="cursor: pointer;">
+                                            <span style="width: 200px;display: block;overflow: hidden;text-overflow: ellipsis;word-break: inherit;" title="{{server.serverremark}}">{{server.serverremark}}</span>
+										</a>
+									{% else %}
+										<a onclick="ShowDiv('addremark_{{server.id}}','fade')" title="点击添加备注" style="cursor: pointer;">[+]</a>
+									{% endif %}
+								</td>
+							</tr>											
+						{% endfor %}											
+					</table>
+				{% else %}
+					<span style="padding-left:30px;margin:10px;">暂未检索到任何服务器。</span>
+				{% endif %}
+				</form>
+                {% for server in serverinfo %}
+                <div id="addremark_{{server.id}}" class="white_content" style="height:260px;top: 30%;left: 45%;">
+				    <div style="cursor:default;height:50px;background: #436fac;">
+					    <span style="font-size: 25px;padding-left:12px;color:white;padding-top: 7px;display: block;width: 89%;float: left;">添加备注</span>
+						    <a style="float:right;" href="" onclick="CloseDiv('addremark_{{server.id}}','fade')"><img style="padding-right:10px;padding-top:8px;" src="{% static 'images/close.png' %}" alt="退出"/></a>
+                    </div>
+                    <div style="cursor:default;padding-top: 35px;">
+                        <div>
+                            <span style="font-size: 20px;padding-top: 12px;">服务器名：</span>
+                            <input id="remarkserver_{{server.id}}" type="text" class="inputzk" style="width: 200px;border: none;background: none;" value="{{server.servername}}" disabled="disabled"/>
+                        </div>
+                    </div>
+                    <div style="cursor:default;padding-top: 20px;">
+                        <div>
+                            <span style="font-size: 20px;padding-top: 12px;">添加备注：</span>
+                            <input id="remark_{{server.id}}" maxlength="30" type="text" class="inputzk" style="width: 200px;" value="{{server.serverremark}}"/>
+                        </div>
+                    </div>
+                    <div style="padding-top:35px">
+                        <input id="add_remark_{{server.id}}" class="btn_blue_a" style="color:#436fac;margin:0 auto;background-color:white;padding-top: 0px;" value="添加" />
+                    </div>
+                </div>
+                {% endfor %}
+                {% if serverinfo %}
+				<div style="padding-top: 12px;text-align:center;">
+                    <a  href="#" id="btn1" style="border: 1px solid #cccccc;padding: 5px;">首页</a>
+					<a  href="#" id="btn2" style="border: 1px solid #cccccc;padding: 5px;">上一页</a>
+					<a id="btn0" style="display:none;"></a>
+					<span class="num-box-nick">
+					</span>
+					<input id="pageSize" type="text" size="1" maxlength="2" value="getDefaultValue()" style="border: none;display:none;"/>
+					<!--<a> 条 </a>-->
+					<!--<a href="#" id="pageSizeSet">设置</a>-->
+
+					<!--<a  href="#" id="btn1">首页</a>-->
+					<a  href="#" id="btn3" style="border: 1px solid #cccccc;padding: 5px;">下一页</a>
+                    <a  href="#" id="btn4" style="border: 1px solid #cccccc;padding: 5px;">尾页</a>
+					<a id="sjzl"></a>
+					<!--<a  href="#" id="btn4">尾页</a>-->
+					<a>转到 </a>
+					<input id="changePage" type="number" min="1" onkeyup="this.value=this.value.replace(/\D/g,'')"  onafterpaste="this.value=this.value.replace(/\D/g,'')" size="1" maxlength="4" style="padding: 5px;width: 45px;border: 1px solid #cccccc;"/>
+                    <a>页</a>
+                    <a href="#" id="btn5">跳转</a>
+                </div>
+                {% endif %}
+
+			</div>
+		</div>  
+	</div>
+    
+{% endblock %}

@@ -1,0 +1,247 @@
+{% extends "clound_base.html" %}
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+
+
+{% block title %}设置中心{% endblock %}
+
+{% block  script %}
+	$(document).ready(function()
+	{
+		function addgroup()
+		{
+			var newgroupname = document.getElementById("newgroupvalue").value;
+            if('' == newgroupname)
+            {
+                alert('新增分组名不能为空');
+                return;
+            }
+
+			$.get("../groupset",{'obj':'newgroup','newgroupname':newgroupname}, function(ret)
+			{
+				if(ret == 'success')
+				{
+					alert('新增分组成功');
+				}
+				else
+				{
+					alert('新增分组失败');
+				}
+                window.location.reload();
+			})
+		}
+
+		$("#add_group").click(function()
+		{ 
+			addgroup();
+		});
+
+        $("#delbtn").click(function()
+		{
+			var checklist = document.getElementsByName("delgroupids");
+            var delgroup = '';
+            for(var i=0; i<checklist.length; i++)
+            {
+                if(checklist[i].checked)
+                {
+                    delgroup+=checklist[i].value+';';
+                }
+            }
+
+            if(-1 != delgroup.indexOf('all'))
+            {
+                delgroup = 'all;';
+            }
+
+            $.get("../groupset",{'obj':'delgroup','delgroup':delgroup}, function(ret)
+			{
+				if(ret == 'success')
+				{
+					alert('删除分组成功');
+				}
+				else
+				{
+					alert('删除分组失败');
+				}
+                window.location.reload();
+			})
+		});
+
+		<!-- 全选取消全选 -->
+		$("#checkall").click(function()
+		{
+			var checklist = document.getElementsByName("delgroupids");
+			if(document.getElementById("checkall").checked)
+			{
+			   for(var i=0;i<checklist.length;i++)
+			   {
+				  checklist[i].checked = 1;
+			   }
+			 }else{
+			  for(var j=0;j<checklist.length;j++)
+			  {
+				 checklist[j].checked = 0;
+			  }
+			 }
+		});
+
+		function submitfunc()
+		{
+			var groupform = document.getElementById('groupform');
+			groupform.submit();
+		}
+
+		$("#newgroupvalue").keydown(function(e)
+		{
+           if (e.keyCode == 13)
+		   {
+				addgroup();
+           }
+		});
+		
+	});
+
+    function init()
+	{
+		var ungroupnum = $("tr[group='ungroup']").length;
+        document.getElementById('ungroup').innerHTML = ungroupnum;
+
+        {% for servergroup in servergroups %}
+			var num = $("tr[group='group_{{servergroup.id}}']").length;
+			document.getElementById('group_{{servergroup.id}}').innerHTML = num;
+        {% endfor %}
+    }
+
+    //页面加载时执行init()函数
+	window.onload = init;
+{% endblock %}
+
+{% block content %}	
+    <div class="contentsettingzk" >
+		<div class="setleft">
+			<div class="settingbtn" ><a style="color: rgb(255, 255, 255);" href="{% url 'servermanage' %}">服务器管理</a></div>
+			<div style="background: rgb(58, 90, 136);" class="settingbtn"><a style="color: rgb(255, 255, 255);" href="{% url 'groupmanage' %}">服务器分组</a></div>
+		</div>	
+		<div style="max-height:1000px;width:100%; background:#f3f7f9;padding-left:16%;overflow: auto;">
+			<div class="fwq_keyword" id="fwq_keyword" style="border: 1px rgb(230, 189, 189) solid;margin-bottom:15px;height:0;">
+			</div>
+			<div style="background:#ffffff;height:85%;margin:20px;">
+				<form id="groupform" name="serverlist" action="." method="post" style="min-height: 900px;">{% csrf_token %}
+				<div class="fwqlb_cz" style="position: relative;overflow:visible;height:66px;background: #436fac;">
+					<ul style="border-bottom:1px solid #e6e6e6;margin-bottom:unset;padding-left:unset;font-size: 20px;">
+					  <li><a href="javascript:;" onclick="ShowDiv('AddGroup','fade');" style="color: white;"><i class="icon_tjfwq" ></i>新增分组</a></li>
+					  <li><a href="javascript:;" onclick="ShowDiv('DelGroup','fade');" style="color: white;"><i class="icon_remove_cq_a"></i>删除分组</a></li>
+					  <li>
+						<div onmouseleave="hideMoreDiv('moveto','grouplist');" onmouseover="showMoreDiv('moveto','grouplist');">
+							<div id="moveto">
+								<a href="javascript:;" style="color: white;"><i class="icon_fzgl_a"></i>移动分组到</a>
+							</div>
+							<div class="grouplistcss" id="grouplist">
+								<input name="movetoUnGroup" value="未分组" type="submit" style="color: #141212ad;width:160px;background:none;height:56px;padding:0;margin:0;overflow: hidden;text-overflow: ellipsis;border: none;border-bottom: 1px solid #e6e6e6;" />
+								{% for servergroup in servergroups %}
+								<input name="movetogroup" value="{{servergroup.groupname}}" type="submit" style="color: #141212ad;width:160px;background:none;height:56px;padding:0;margin:0;overflow: hidden;text-overflow: ellipsis;border: none;border-bottom: 1px solid #e6e6e6;" />
+								{% endfor %}
+							</div>
+						</div>
+					  </li>
+					</ul>
+					<!--<div class="fwq_search_ip" style="position: relative">-->
+						<!--<input name="searchname" placeholder="输入分组名" type="text" class="input_search_ip" style="width:200px;margin-top: 13px;">-->
+						<!--<input type="submit" style="float: right;margin-left: 10px;margin-top: 10px;border-radius: 10px;height: 24px;width: 64px;padding-top: 3px;background: white;color: #436fac;border: none;" value="搜索"/>-->
+					<!--</div>-->
+				</div>
+					<table width="100%" style="line-height: 56px;">
+						<tr id="type_0_ungroup"  onclick="return openOrCloseAlarmType(this.id);" style="background: #bbcfea6e;font-size: 21px;border-bottom: 1px rgb(230, 189, 189) solid;">
+							<td class= "border_dotted_bottom" style="cursor:pointer;">
+								<i class="btn_jiahao_a" style="width:22px;height:16px; float:left;margin-top: 20px;margin-left: 10px;"></i>
+								未分组(<span id="ungroup"></span>)
+							</td>
+						</tr>
+						{% for server in serverinfo %}
+							{% if '' == server.servergroup %}
+								<tr id="type_0_ungroup_{{server.id}}" group="ungroup" class="display_none" style="background:#faebd770;font-size:18px;padding-left:50px;">
+									<td style="padding-left: 50px;" >
+										<input name="serverIds" class="checkbox_serverInfo" type="checkbox" value="select_{{server.id}}" />
+										{{server}}
+									</td>
+								</tr>
+							{% endif %}
+							{% if 'Un_Group' == server.servergroup %}
+								<tr id="type_0_ungroup_{{server.id}}" group="ungroup" class="display_none" style="background:#faebd770;font-size:18px;padding-left:50px;" >
+									<td style="padding-left: 50px;">
+										<input name="serverIds" class="checkbox_serverInfo" type="checkbox" value="select_{{server.id}}" />
+										{{server}}
+									</td>
+								</tr>
+							{% endif %}
+						{% endfor %}
+
+						{% for servergroup in servergroups %}
+							<tr id="type_0_{{servergroup.id}}" onclick="return openOrCloseAlarmType(this.id);" style="background: #bbcfea6e;font-size: 21px;border-bottom: 1px rgb(230, 189, 189) solid;">
+								<td class= "border_dotted_bottom" style="cursor:pointer;">
+									<i class="btn_jiahao_a" style="width:22px;height:16px; float:left;margin-top: 20px;margin-left: 10px;"></i>
+                                    {{servergroup.groupname}}(<span id="group_{{servergroup.id}}"></span>)
+								</td>
+							</tr>
+							{% for server in serverinfo %}
+								{% if server.servergroup == servergroup.groupcode %}
+									<tr id="type_0_{{servergroup.id}}_{{server.id}}" group="group_{{servergroup.id}}" style="background:#faebd770;font-size:18px;padding-left:50px;" class="display_none">
+										<td style="padding-left: 50px;">
+											<input name="serverIds" class="checkbox_serverInfo" type="checkbox" value="select_{{server.id}}" />
+											{{server}}
+										</td>
+									</tr>
+								{% endif %}
+							{% endfor %}
+						{% endfor %}											
+					</table>
+				</form>
+                <div id="AddGroup" class="white_content" style="top: 30%;left: 40%;">
+						<div style="cursor:default;height:50px;background: #436fac;">
+							<span style="font-size: 25px;padding-left:12px;color:white;padding-top: 12px;">新增分组</span>
+							<a style="float:right;" href="javascript:;" onclick="CloseDiv('AddGroup','fade')"><img style="padding-right:12px;padding-top:12px;" src="{% static 'images/close.png' %}" alt="退出"/></a>
+						</div>
+						<div style="cursor:default;padding-top: 30px;">
+							<span style="font-size: 20px;padding-top: 12px;">分组名：</span>
+							<input id="newgroupvalue" maxlength="30" name="newgroup" type="text" class="inputzk" style="width: 200px;height:40px;" autocomplete="off"/>
+						</div>
+						  <div style="line-height: 15px;">
+							  <span style="font-size: 13px;padding-left:50px;"><span style="color:red;">*</span>分组名不能为空或包含空格</span>
+						  </div>
+						  <div style="line-height: 15px;">
+							  <input id="add_group" class="btn_blue_a" name="delselected" style="font-size: 16px;padding-top: 0px;font-weight: unset;margin:0 auto;margin-top: 40px;" value="添加"/>
+						  </div>
+					</div>
+					<div id="DelGroup" class="white_content fwqlb_cz" style="top: 30%;left: 40%;width: 460px;text-align:left;min-height: 300px;">
+						<div style="cursor:default;height:50px;background: #436fac;text-align:center;">  	<span style="font-size: 25px;padding-left:12px;color:white;padding-top: 12px;">删除分组</span>
+							<a style="float:right;" href="javascript:;" onclick="CloseDiv('DelGroup','fade')"><img style="padding-right:12px;padding-top:12px;" src="{% static 'images/close.png' %}" alt="退出"/></a>
+						</div>
+						<ul id="groupul" style="width: 460px;line-height: 30px;padding-top: 20px;">
+							<li style="width:50%;border: none;">
+								<div>
+									<input id='checkall' name="delgroupids" class="checkbox_serverInfo" type="checkbox" value="all" />
+									<span style="font-size: 20px;padding-top: 12px;float:none;">全选</span>
+								</div>
+							</li>
+							{% for servergroup in servergroups %}
+							<li style="width:50%;border: none;">
+								<div>
+									<input name="delgroupids" class="checkbox_serverInfo" type="checkbox" value="del_{{servergroup.id}}" />
+									<input type="text" class="inputzk" style="font-size: 20px;width: 150px;border: none;background: none;overflow: hidden;text-overflow: ellipsis;" title="{{servergroup.groupname}}" disabled="disabled" value="{{servergroup.groupname}}"/>
+								</div>
+							</li>
+							{% endfor %}
+						</ul>
+						<ul id="btnul" style="width:100%;padding-top:20px;">
+							<li style="width:40%;margin-left:15%;border: none;"><input id="delbtn" class="btn_blue_a" type="submit" style="color:#436fac;background-color:white;padding-bottom:32px;font-size: 17px;font-weight: unset;" value="删除" /></li>
+							<li style="width:40%;border: none;">
+								<input class="btn_blue_a" onclick="CloseDiv('DelGroup','fade')" type="submit" style="color:#436fac;background-color:white;padding-bottom:32px;font-size: 17px;font-weight: unset;" value="取消" />
+                            </li>
+						</ul>
+					</div>
+			</div>
+		</div>  
+	</div>
+    
+{% endblock %}

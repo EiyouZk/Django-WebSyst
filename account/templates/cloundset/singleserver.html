@@ -1,0 +1,636 @@
+{% extends "clound_base.html" %}
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+
+{% block title %}服务器-{{server.servername}}{% endblock %}
+
+{% block  script %}
+	$(document).ready(function()
+	{
+		$("#remark_{{server.id}}").keydown(function(e)
+		{
+		   if (e.keyCode == 13)
+		   {
+				var remark = document.getElementById("remark_{{server.id}}").value;
+				$.get("../addremark",{'obj':'addremark','remark':remark,'remarkserverid':{{server.id}}}, function(ret)
+				{
+					if(ret == 'success')
+					{
+						alert('添加备注成功');
+					}
+					else
+					{
+						alert('添加备注失败');
+					}
+					window.location.reload();
+				})
+		   }
+		});
+
+		
+		$("#add_remark_{{server.id}}").click(function()
+		{ 
+			var remark = document.getElementById("remark_{{server.id}}").value; 
+			$.get("../addremark",{'obj':'addremark','remark':remark,'remarkserverid':{{server.id}}}, function(ret)
+			{
+				if(ret == 'success')
+				{
+					alert('添加备注成功');
+					window.location.reload();
+				}
+				else
+				{
+					alert('添加备注失败');
+				}
+			})
+		});
+		
+		<!--checkSocketLink();		-->
+	});
+	
+	function connectclient()
+	{
+		$.get("../connectclient",{'obj':'connectclient'}, function(ret)
+			{
+				if(ret == 'success')
+				{
+					alert('连接客户端成功');
+					window.location.reload();
+				}
+				else
+				{
+					alert('连接客户端失败');
+				}
+			}
+		);
+	}
+	
+	var regis_i = 0,syss_i = 0, dir_i = 0, account_i = 0,startitem_i = 0;
+	var showbar_regis,showbar_syss,showbar_dir,showbar_account,showbar_startitem;
+	var scaning = false;
+	var speed = 20;
+	
+	function setbar(progressbar)
+	{
+		if(progressbar == 'bar_regis')
+		{
+			regis_i += speed;
+			document.getElementById(progressbar).style.width=regis_i+"%";  
+			document.getElementById(progressbar).innerHTML=regis_i+"%"; 
+			if(regis_i >=100)
+			{
+                $.get("../getresult",{'serverid':'{{server.id}}','obj':'registry'}, function(ret)
+                {
+                    document.getElementById('resultstr_registry').innerHTML=ret;
+                })
+
+				document.getElementById('result_regis').style.display='block'; 
+				document.getElementById('stopscan_regis').style.display='none'; 
+				document.getElementById('scan_regis').innerHTML='重新扫描';
+				clearInterval(showbar_regis);  
+			}
+		}
+		else if(progressbar == 'bar_syss')
+		{
+			syss_i += speed;
+			document.getElementById(progressbar).style.width=syss_i+"%";  
+			document.getElementById(progressbar).innerHTML=syss_i+"%";  
+			if(syss_i >=100)
+			{
+                $.get("../getresult",{'serverid':'{{server.id}}','obj':'service'}, function(ret)
+                {
+                    document.getElementById('resultstr_service').innerHTML=ret;
+                })
+
+				document.getElementById('result_syss').style.display='block'; 
+				document.getElementById('stopscan_syss').style.display='none'; 
+				document.getElementById('scan_syss').innerHTML='重新扫描';
+				clearInterval(showbar_syss);  
+			}
+		}
+		else if(progressbar == 'accountbar')
+		{
+			account_i += speed;
+			document.getElementById(progressbar).style.width=account_i+"%";  
+			document.getElementById(progressbar).innerHTML=account_i+"%"; 
+			if(account_i >=100)
+			{
+                $.get("../getresult",{'serverid':'{{server.id}}','obj':'account'}, function(ret)
+                {
+                    document.getElementById('resultstr_account').innerHTML=ret;
+                })
+
+				document.getElementById('result_account').style.display='block'; 
+				document.getElementById('stopscan_account').style.display='none'; 
+				document.getElementById('scan_account').innerHTML='重新扫描';
+				clearInterval(showbar_account);  
+			}
+		}
+		
+	}
+	
+	function startbar(progressbar)
+	{
+        var status = document.getElementById("serverstate").value;
+        if(-1 == status.indexOf("已登录"))
+        {
+            alert('客户端未登录，无法扫描');
+            return;
+        }
+
+        var obj = '';
+		if(progressbar == 'bar_regis')
+		{
+			document.getElementById('scan_regis').innerHTML='正在扫描...';  
+			document.getElementById('stopscan_regis').style.display='block'; 
+			document.getElementById('scant_regisr').style.display='block'; 
+			document.getElementById('result_regis').style.display='none'; 
+			regis_i = 0;
+            obj = 'registry';
+            showbar_regis=setInterval(setbar,1000,progressbar);
+		}
+		else if(progressbar == 'bar_syss')
+		{
+			document.getElementById('scan_syss').innerHTML='正在扫描...';  
+			document.getElementById('stopscan_syss').style.display='block'; 
+			document.getElementById('scantr_syss').style.display='block'; 
+			document.getElementById('result_syss').style.display='none'; 
+			syss_i = 0;
+            obj = 'service';
+			showbar_syss=setInterval(setbar,1000,progressbar); 
+		}
+		else if(progressbar == 'accountbar')
+		{
+			document.getElementById('scan_account').innerHTML='正在扫描...';  
+			document.getElementById('stopscan_account').style.display='block'; 
+			document.getElementById('scantr_account').style.display='block'; 
+			document.getElementById('result_account').style.display='none'; 
+			account_i = 0;
+            obj = 'account';
+			showbar_account=setInterval(setbar,1000,progressbar); 
+		}
+
+        $.get("../serveroptimize",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','obj':obj,'type':0}, function(ret)
+        {
+            console.log(ret);
+        }
+        )
+	}
+	
+	function stopbar(progressbar)
+	{
+		scaning  = false;	
+		var end_i = 0;
+		if(progressbar == 'bar_regis')
+		{		
+			document.getElementById('scan_regis').innerHTML='开始扫描';
+			document.getElementById('stopscan_regis').style.display='none'; 
+			document.getElementById('scant_regisr').style.display='none'; 
+			clearInterval(showbar_regis); 
+		}
+		else if(progressbar == 'bar_syss')
+		{
+			document.getElementById('scan_syss').innerHTML='开始扫描';
+			document.getElementById('stopscan_syss').style.display='none';
+			document.getElementById('scantr_syss').style.display='none';
+			clearInterval(showbar_syss); 
+		}
+		else if(progressbar == 'accountbar')
+		{
+			document.getElementById('scan_account').innerHTML='开始扫描';
+			document.getElementById('stopscan_account').style.display='none';
+			document.getElementById('scantr_account').style.display='none';
+			clearInterval(showbar_account); 
+		}
+		
+		document.getElementById(progressbar).style.width=end_i+"%";  
+		document.getElementById(progressbar).innerHTML=end_i+"%";  
+	}
+	
+	function improve(progressbar)
+	{
+		scaning  = false;
+		var end_i = 0;
+        var obj = '';
+		if(progressbar == 'bar_regis')
+		{		
+			document.getElementById('scan_regis').innerHTML='立即扫描';
+			document.getElementById('stopscan_regis').style.display='none'; 
+			document.getElementById('scant_regisr').style.display='none'; 
+			clearInterval(showbar_regis);
+            obj = 'registry';
+		}
+		else if(progressbar == 'bar_syss')
+		{
+			document.getElementById('scan_syss').innerHTML='立即扫描';
+			document.getElementById('stopscan_syss').style.display='none';
+			document.getElementById('scantr_syss').style.display='none';
+			clearInterval(showbar_syss);
+            obj = 'service';
+		}
+		else if(progressbar == 'accountbar')
+		{
+			document.getElementById('scan_account').innerHTML='立即扫描';
+			document.getElementById('stopscan_account').style.display='none';
+			document.getElementById('scantr_account').style.display='none';
+			clearInterval(showbar_account);
+            obj = 'account';
+		}
+		
+		document.getElementById(progressbar).style.width=end_i+"%";  
+		document.getElementById(progressbar).innerHTML=end_i+"%";
+
+        $.get("../serveroptimize",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','obj':obj,'type':1}, function(ret)
+        {
+            console.log(ret);
+            alert("优化命令发送成功！");
+        }
+        )
+	}
+	  
+	
+    function debug(message) {
+		<!-- alert("收到消息:\n" + message); -->
+    }
+
+    function sendMessage() {
+        var msg = document.getElementById("inputText").value;
+        if ( websocket != null )
+        {
+            document.getElementById("inputText").value = "";
+            websocket.send( msg );
+            console.log( "string sent :", '"'+msg+'"' );
+        }
+    }
+
+    var wsUri = "ws://{{server.serverip}}:8000";
+    var websocket = null;
+
+    function initWebSocket()
+    {
+        try {
+            if (typeof MozWebSocket == 'function')
+                WebSocket = MozWebSocket;
+            if ( websocket && websocket.readyState == 1 )
+                websocket.close();
+            websocket = new WebSocket( wsUri );
+            websocket.onopen = function (evt) {
+                debug("CONNECTED");
+				if('' != '{{server.logincity}}')
+				{
+					document.getElementById("serverstate").value = '已登录' + '[{{server.logincity}}]';
+				}
+				else
+				{
+					document.getElementById("serverstate").value = '已登录';
+				}
+				document.getElementById("set_a").setAttribute("href","../protectset/?serverid={{server.id}}");
+            };
+            websocket.onclose = function (evt) {
+                debug("DISCONNECTED");
+				document.getElementById("serverstate").value = '未登录';
+				document.getElementById("set_a").setAttribute("href","javascript:;");
+            };
+            websocket.onmessage = function (evt) {
+                console.log( "Message received :", evt.data );
+                debug( evt.data );
+            };
+            websocket.onerror = function (evt) {
+                debug('ERROR: ' + evt.data);
+            };
+        } catch (exception) 
+		{	
+            debug('ERROR: ' + exception);		
+        }
+    }
+
+    function stopWebSocket() {
+        if (websocket)
+            websocket.close();
+    }
+
+
+
+
+	initWebSocket();
+	function init()
+	{
+        document.getElementById("protdays").innerHTML = {{protect_days}};
+
+        {% if 'nonexistserver' == error %}
+            alert('不存在的服务器！');
+        {% endif %}
+
+		var option = 
+		{
+			tooltip :
+			{
+				trigger: 'item',
+				formatter: "{a} <br/>{b} : {c} ({d}%)"
+			},
+			legend:
+			{
+                <!--selectedMode:false,-->
+                top:'10%',
+				orient : 'vertical',
+				x : 'left',
+				data:['ARP对外攻击','ARP欺骗攻击','IP冲突攻击','DDOS扫描攻击','UDP攻击','CC攻击','远程桌面暴力破解','ICMP攻击','SYN攻击','FTP暴力破解','MySQL暴力破解','MSSQL暴力破解']
+			},
+			toolbox: 
+			{
+				show : false,
+				feature : {
+					mark : {show: true},
+					magicType : {
+						show: true, 
+						type: ['pie', 'funnel'],
+						option: {
+							funnel: {
+								x: '5%',
+								width: '80%',
+								funnelAlign: 'center',
+								max: 1548
+							}
+						}
+					},
+					saveAsImage : {show: true}
+				}
+			},
+			calculable : true,
+			series : 
+			[
+				{
+					name:'攻击统计',
+					type:'pie',
+					radius : ['45%', '70%'],
+                    center:[490,190],
+					itemStyle : 
+					{
+						normal : 
+						{
+							label : 
+							{
+								show : false
+							},
+							labelLine : 
+							{
+								show : false
+							},
+							color: function(params) 
+							{
+								var colorList = ['#065381','#e34856','#fe912a','#34b2e4','#4673b1','#b34856','#94b2e4','#74b2e4','#f6912a','#634856','#54b2e4','#934856'];
+								return colorList[params.dataIndex]
+							}
+						},
+						emphasis : 
+						{
+							label : {
+								show : true,
+								position : 'top',
+								textStyle : {
+									fontSize : '30',
+									fontWeight : 'bold'
+								}
+							}
+						}
+					},
+					data:[
+						{value:{{server.ARPoutattack}},name:'ARP对外攻击'},
+						{value:{{server.ARPfobattack}},name:'ARP欺骗攻击'},
+						{value:{{server.ARPIPclashattack}},name:'IP冲突攻击'},
+                        {value:{{server.APPremotedeskattack}},name:'远程桌面暴力破解'},
+						{value:{{server.DDosscanattack}},name:'DDOS扫描攻击'},
+						{value:{{server.DDosUDPattack}},name:'UDP攻击'},
+						{value:{{server.WebCCattack}},name:'CC攻击'},
+                        {value:{{server.DDosICMPattack}},name:'ICMP攻击'},
+                        {value:{{server.SYNattack}},name:'SYN攻击'},
+                        {value:{{server.Ftpattack}},name:'FTP暴力破解'},
+                        {value:{{server.MySqlattack}},name:'MySQL暴力破解'},
+                        {value:{{server.MSSqlattack}},name:'MSSQL暴力破解'},
+					]
+				}
+			]
+		};
+                    	
+		//初始化echarts实例,使用制定的配置项和数据显示图表
+		echarts.init(document.getElementById('attackinfo')).setOption(option);
+	}
+	
+	//页面加载时执行init()函数  
+    window.onload = init; 
+{% endblock %}
+
+{% block content %}	
+    <div class="contentsettingzk" >
+		<div class="setleft">
+			<div style="background: rgb(58, 90, 136);" class="settingbtn" ><a style="color: rgb(255, 255, 255);" href="../singleserver/?serverid={{server.id}}">仪表盘</a></div>
+			<div class="settingbtn"><a id="set_a" style="color: rgb(255, 255, 255);" href="javascript:;">设置中心</a></div>
+		</div>
+		<div style="float:right;height:100%;width:84%; background:#f3f7f9;">
+			<div style="margin-bottom:15px;height:6%;">
+				<ul class="ulzk" style="padding:15px;font-size: 30px">
+					<li><a href="">{{server.servername}}</a></li>
+					<li style="font-size: 20px;padding-top: 6px;"><a style="color:#0000008f;" href="" title="服务器IP">{{server.serverip}}</a></li>
+					<li style="font-size: 20px;padding-top: 6px;">
+						<a style="color:#0000008f;" href="{% url 'groupmanage' %}" title="分组">
+							分组：{% if server.servergroup == 'Un_Group' %}
+										未分组
+									{% endif %}
+									{% for servergroup in servergroups %}
+										{% if servergroup.groupcode == server.servergroup %}
+											{{servergroup.groupname}}
+										{% endif %}
+									{% endfor %}
+						</a>
+					</li>
+					<li style="font-size: 20px;padding-top: 6px;border-right:none;padding-right: 0px;">
+						备注：
+					</li>
+                    <li style="font-size: 20px;padding-top: 6px;padding-left: 0px;">
+                        {% if '' != server.serverremark %}
+                        <a href="javascript:ShowDiv('addremark_{{server.id}}','fade')" title="点击添加备注" style="cursor: pointer;">
+                            <span style="max-width: 265px;display: block;overflow: hidden;text-overflow: ellipsis;word-break: inherit;" title="{{server.serverremark}}">{{server.serverremark}}</span>
+                         </a>
+						{% else %}
+							<a onclick="ShowDiv('addremark_{{server.id}}','fade')" title="点击添加备注" style="cursor: pointer;">[+]</a>
+						{% endif %}
+                    </li>
+					 <!--<li style="font-size: 20px;padding-top: 6px;"><a onclick="checkSocket()" style="cursor: pointer;">测试:校验连接状态</a></li>-->
+					 <!--<li style="font-size: 20px;"><input type="text" id="inputText" onkeydown="if(event.keyCode==13)sendMessage();" style="padding:unset;margin:unset;"/></li>-->
+					 <!--<li style="font-size: 20px;"><button onClick="sendmess();">测试:发送</button></li>-->
+					 <!--<li style="font-size: 20px;"><button onClick="connectclient();">连接客户端</button></li>-->
+				</ul>
+				<div id="addremark_{{server.id}}" class="white_content" style="height:260px;left:30%;">
+					<div style="cursor:default;height:50px;background: #436fac;">  
+						<span style="font-size: 25px;padding-left:12px;color:white;padding-top: 12px;">备注</span> 
+						<a style="float:right;" href="" onclick="CloseDiv('addremark_{{server.id}}','fade')"><img style="padding-right:12px;padding-top:12px;" src="{% static 'images/close.png' %}" alt="退出"/></a>  
+					</div>
+					<div style="cursor:default;padding-top: 20px;"> 
+						<div>
+							<span style="font-size: 20px;padding-top: 12px;">服务器名：</span>
+							<input id="remarkserver_{{server.id}}" type="text" class="inputzk" style="width: 200px;" value="{{server.servername}}" disabled="disabled"/>
+						</div>						
+					</div>
+					<div style="cursor:default;padding-top: 20px;"> 
+						<div>
+							<span style="font-size: 20px;padding-top: 12px;">添加备注：</span>
+							<input id="remark_{{server.id}}" maxlength="30"  type="text" class="inputzk" style="width: 200px;" value="{{server.serverremark}}"></input>
+						</div>						
+					</div>
+					<div style="padding-top:35px">
+						<input id="add_remark_{{server.id}}" class="btn_blue_a" type="text" style="color:#436fac;margin:0 auto;background-color:white;" value="添加" />
+					</div>
+				</div> 
+			</div>				
+			<div style="background:#ffffff;height:85%;margin:20px;">
+				<h4 style="padding:10px;color:#0000008f;background: rgba(202, 151, 83, 0.1803921568627451);;">服务器状态</h4>
+				<div style="height: 60px;">
+					<ul class="ulzk" style="font-size: 21px;padding:15px;">					
+						<li>雷盾已保护您的服务器 <span id="protdays" style="color:#34b2e4;"></span> 天</li>
+						<li>客户端: <input id="serverstate" type="text" style="color:#34b2e4;background:none;height:25px;font-size:21px;width:160px;border: none;margin:0px;padding:0px" readonly="readonly"/></li>
+						<li>受保护于模版： <a href="{% url 'strategy' %}" style="color:#34b2e4;">{{server.strategyname}}</a> 下</li>
+					</ul>
+				</div>
+				<div style="height: 430px;padding-top:10px;border-bottom: 1px rgb(230, 189, 189) solid;border-top: 1px rgb(230, 189, 189) solid;padding-bottom:10px;">
+					<h4 style="padding:10px;color:#0000008f;background: rgba(202, 151, 83, 0.1803921568627451);;">安全威胁</h4>
+					<div style="width:56%;float:left;height:350px;border-right: 1px rgb(230, 189, 189) solid;padding-right:10px;">
+						<div id="attackinfo" style="height:350px;padding-left: 30px;margin-top: -10px;">
+						</div>
+					</div>
+					<div style="width:44%;height:350px;overflow:hidden;margin-right:10px;margin-top: 25px;">
+						<table style="padding:15px 15px 18px 18px; width: 100%;font-size: 15px;color: #021616;margin: 10px;text-align: left;">
+							<thead style="line-height: 40px;background: #436fac;font-size: 18px;">
+								<tr style="color:white;line-height: 45px;">
+                                    <td style="padding-left:40px;">攻击类型</td>
+                                    <td>攻击次数（次）</td>
+                                    <td style="padding-left:40px;">攻击类型</td>
+                                    <td>攻击次数（次）</td>
+								</tr>
+							</thead>
+							<tbody style="line-height: 40px;">
+								<tr style="background:rgba(6, 83, 129, 0.21176470588235294);">
+									<td style="padding-left:50px;">ARP对外攻击</td>
+									<td>{{server.ARPoutattack}}</td>
+									<td style="padding-left:50px;">ARP欺骗攻击</td>
+									<td>{{server.ARPfobattack}}</td>
+								</tr>
+								<tr style="background:rgba(254, 145, 42, 0.21176470588235294);">
+									<td style="padding-left:50px;">IP冲突攻击</td>
+									<td>{{server.ARPIPclashattack}}</td>
+									<td style="padding-left:50px;">DDOS扫描攻击</td>
+									<td>{{server.DDosscanattack}}</td>
+								</tr>
+								<tr style="background:rgba(70, 115, 177, 0.21176470588235294);">
+									<td style="padding-left:50px;">ICMP攻击</td>
+									<td>{{server.DDosICMPattack}}</td>
+									<td style="padding-left:50px;">UDP攻击</td>
+									<td>{{server.DDosUDPattack}}</td>
+								</tr>
+                                <tr style="background:rgba(148, 178, 228, 0.21176470588235294);">
+									<td style="padding-left:50px;">CC攻击</td>
+									<td>{{server.WebCCattack}}</td>
+                                    <td style="padding-left:50px;">SYN攻击</td>
+									<td>{{server.SYNattack}}</td>
+								</tr>
+                                <tr style="background:rgba(68, 178, 228, 0.21176470588235294);">
+									<td style="padding-left:50px;">远程桌面暴力破解</td>
+									<td>{{server.APPremotedeskattack}}</td>
+                                    <td style="padding-left:50px;">MSSQL暴力破解</td>
+									<td>{{server.MSSqlattack}}</td>
+								</tr>
+                                <tr style="background:rgba(99, 72, 86, 0.21176470588235294);;">
+									<td style="padding-left:50px;">FTP暴力破解</td>
+									<td>{{server.Ftpattack}}</td>
+									<td style="padding-left:50px;">MySQL暴力破解</td>
+									<td>{{server.MySqlattack}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div style="border-bottom: 1px rgb(230, 189, 189) solid;padding-bottom:10px;padding-top:20px;">
+					<h4 style="padding:10px;color:#0000008f;border-bottom: 1px rgb(230, 189, 189) solid;background: rgba(202, 151, 83, 0.1803921568627451);;">服务器优化</h4>
+					<div style="width:100%;padding-top:10px;margin: 10px 0px 0px 10px;">
+						<table id="table-strtemp" width="100%" style="line-height: 62px;background:none;border:none">
+							<tr class="sevrerimprove">
+								<td>
+									<div style="float:left;width:150px;">
+										<img style="padding-right: 10px;" src="{% static 'images/file.png' %}" alt=""/>注册表
+									</div>
+									<div style="overflow:hidden;padding-left:500px;padding-top: 2px;">
+										<a id="scan_regis" class="scan" href="javascript:startbar('bar_regis')" >立即扫描</a>
+										<a id="stopscan_regis" class="stopscan" href="javascript:stopbar('bar_regis')">停止扫描</a>
+									</div>
+								</td>
+							</tr>
+							<tr style="line-height:20px;" id="scant_regisr" class="scanbartr">
+								<td>
+									<div style="min-width:1400px;">
+										<div class="loadbar">
+											  <span class="bar" id="bar_regis" style="width: 0%;max-width:600px;">0%</span>  
+										</div> 
+										<div id="result_regis" class="scanresult">
+											<p id="resultstr_registry" style="float:left;display:block;"></p>
+											<p><a id="improveregis" href="javascript:improve('bar_regis');" style="padding-left:50px;">立即优化</a></p>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr class="sevrerimprove">
+								<td>
+									<div style="float:left;width:150px;">
+										<img style="padding-right: 10px;" src="{% static 'images/system.png' %}" alt=""/>系统服务
+									</div>
+									<div style="overflow:hidden;padding-left:500px;padding-top: 2px;">
+										<a id="scan_syss" class="scan" href="javascript:startbar('bar_syss')" >立即扫描</a>
+										<a id="stopscan_syss" class="stopscan" href="javascript:stopbar('bar_syss')">停止扫描</a>
+									</div>
+								</td>
+							</tr>
+							<tr style="line-height:20px;" id="scantr_syss" class="scanbartr">
+								<td>
+									<div style="min-width:1400px;">
+										<div class="loadbar">
+											  <span class="bar" id="bar_syss" style="width: 0%;max-width:600px;">0%</span>  
+										</div> 
+										<div id="result_syss" class="scanresult">
+											<p id="resultstr_service" style="float:left;display:block;"></p>
+											<p><a id="improvesyss" href="javascript:improve('bar_syss');" style="padding-left:50px;">立即优化</a></p>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr class="sevrerimprove">
+								<td>
+									<div style="float:left;width:150px;">
+										<img style="padding-right: 10px;" src="{% static 'images/account.png' %}" alt=""/>系统账号优化
+									</div>
+									<div style="overflow:hidden;padding-left:500px;padding-top: 2px;">
+										<a id="scan_account" class="scan" href="javascript:startbar('accountbar')" >立即扫描</a>
+										<a id="stopscan_account" class="stopscan" href="javascript:stopbar('accountbar')">停止扫描</a>
+									</div>
+								</td>
+							</tr>
+							<tr style="line-height:20px;" id="scantr_account" class="scanbartr">
+								<td>
+									<div style="min-width:1400px;">
+										<div class="loadbar">
+											  <span class="bar" id="accountbar" style="width: 0%;max-width:600px;">0%</span>  
+										</div> 
+										<div id="result_account" class="scanresult">
+											<p id="resultstr_account" style="float:left;display:block;"></p>
+											<p><a id="improveaccount" href="javascript:improve('accountbar');;" style="padding-left:50px;">立即优化</a></p>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</table>						
+					</div>
+				</div>
+				 				  
+			</div>
+		</div>  
+	</div>
+    
+{% endblock %}

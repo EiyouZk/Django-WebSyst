@@ -1,0 +1,165 @@
+<html style="width:600px;height:480px; overflow: hidden;"><head>
+		
+
+
+
+<title>安全狗.服云</title>
+<meta name="keywords" content="服务器安全监控，服务器管理，网页云防篡改，网站云安全检测，实时告警">
+<meta name="description" content="安全狗云安全中心为站长和IDC们提供服务器状态监控、服务器资源监控、网站可用性监控、网站安全检测、网页防篡改、告警通知等全方位的服务器与网站安全防御体系">
+<script type="text/javascript" src="/js/jquery/jquery-1.11.3.min.js?362"></script>
+<!-- placeholder for jquery-migrate-1.2.1.min.js -->
+<script type="text/javascript">
+	var isDemoUser = "1";
+	var hasLoginDemoUser = "";
+	var demoPhoneNum = "";
+</script>
+<script type="text/javascript">
+    window.contextPath = "";
+    window.basePath = "http" + "://" + "fuyun.safedog.cn" 
+    		+ ":" + "80" + contextPath;
+    //下载文件上传客户端
+    function downloadUploadClient() {
+    	//window.location.href = contextPath + "/client/SafedogClient_Setup.exe";
+    	window.open("http://www.safedog.cn/download/software/safedogcloudsetup.exe");
+    	return false;
+    }
+</script>
+<!-- 适用于IE6下过滤png -->
+ <!--[if lte IE 6]><script type="text/javascript" src="/js/iepngfix_tilebg.js?362"></script><![endif]-->
+ <!--[if lte IE 6]><style>img, div, input { behavior: url("/css/iepngfix.htc") }</style><![endif]-->
+
+		<title>安全狗设置-服务器管理中心-安全狗云安全中心</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="title" content="服务器管理中心-安全狗云安全中心">
+		<script>
+		     $(document).ready(function(){
+		       $(":radio").change(function(){
+		    	  if($(":radio[checked='checked']").val() == 1){
+		    		  $("#has_safedog").show();
+		    		  $("#no_safedog").hide();
+		    	  }else{
+		    		  $("#has_safedog").hide();
+		    		  $("#no_safedog").show();
+		    	  }
+		       });
+		     });
+		     
+		
+
+			function windowsGuide(){
+				$("#tab_windows").addClass("tjfwq_nav_selected");
+				$("#tab_linux").removeClass("tjfwq_nav_selected");
+				$("#windows_div").show();
+				$("#linux_div").hide();
+			}
+			
+			function linuxGuide(){
+				$("#tab_linux").addClass("tjfwq_nav_selected");
+				$("#tab_windows").removeClass("tjfwq_nav_selected");
+				$("#linux_div").show();
+				$("#windows_div").hide();
+			}
+		</script>
+		<style>
+		/*添加服务器*/
+		.yc_nav_1{ overflow:hidden; height:80px; background:#5079b4;}
+		.yc_nav_1 dl{ float:left; height:80px;  width:350px;background:#5079b4;  }
+		.yc_nav_daqian_1{ background:#577fba !important;}
+		.yc_nav_1 dl dt{ color:#eaff04; font-size:24px; text-align:center; padding-top:8px;}
+		.yc_nav_1 dl dd{ color:#fff; text-align:center;  line-height:18px; }
+		.yc_nav_1 dl dd span{ font-size:24px;}
+		
+		.tjfwq_1{ border:1px solid #e1e1e1; border-top:none; overflow:hidden; }
+		.tjfwq_nr_1{ overflow:hidden; width:700px;}
+		.tjfwq_left_1{ width:298px; float:left; padding-top:110px; padding-left:50px;}
+		.rhtjfwq_03_nr_1{ padding:20px;}
+		.icon_laba_1{ float:left; background:url(../images/icon_laba.jpg) no-repeat; width:24px; height:24px; display: block;}
+		
+		/**黑色按钮***/
+		.btn_black_a_1{ width:230px; height:45px; padding-top:10px; background:#2a3753; color:#fff; text-align:center; font:24px "Microsoft Yahei", "宋体" san-serif;  cursor:pointer; display:block; text-decoration:none; border-radius: 3px;  margin-top:15px;}
+		.btn_black_a_1:hover{ background:#3a4867; text-decoration:none;}
+		.tjfwq_right_1{ width:350px; float:left; background:#edfcff; padding:20px 0 ; }
+		.fwq_yyfwq_bt_1{padding-left:20px;}
+		.rhtjfwq_01_1{ padding-left:15px; width:270px; height:148px; }
+		.rhtjfwq_01_nr_1{ padding-top:10px; line-height:24px; padding-left:20px;}
+		.rhtjfwq_02_1{ padding-left:15px; width:300px; height:148px;  background:url(../images/jrfy_small.jpg) no-repeat 70px 60px;}
+		.shuzhi_01_1{ background:url(../images/shuzi_12_1.jpg) no-repeat 0 2px;}
+		.shuzhi_02_1{ background:url(../images/shuzi_12_1.jpg) no-repeat 0 -36px;}
+		
+		/****如何添加服务器****************/
+		.tjfwq{ width:100%; padding-top:40px;}
+		.right_bt{ font-size:18px; padding-left:15px;}
+		.right_bt a{ font-size:14px; padding-left:5px;}
+		.tjfwq_nr{ padding-right:15px; padding-top:20px; overflow:hidden; line-height:24px;}
+		.tjfwq_nr_left{ float:left;margin-right:10px; background:url(../images/index_right.gif) no-repeat 5px 0; width:36px; height:270px;}
+		.tjfwq_nr_right{ width:82%; float:left;margin-left: 15px;}
+		</style>
+</head>
+<body>
+
+
+<div style="width:700px;">
+  <div class="yc_nav_1" style="position: relative;">
+       <dl>
+         <dt>已有服务器</dt>
+         <dd>马上添加服务器到服云</dd>
+       </dl>
+       <img id="close_img" style="position: absolute;right: 10px;top: 10px;cursor: pointer;" src="../images/close_1.gif" alt="关闭" onclick="parent.tb_remove();">
+  </div>
+     
+  <div class="tjfwq_1">
+    <div class="tjfwq_nr_1">      
+      <div class="tjfwq_left_1">         
+       <div class="tjfwq_nr">
+         <div class="tjfwq_nr_right">
+           <dl>
+             <dt>1、下载服务器安全狗软件</dt>
+             <dd><a href="http://www.safedog.cn/server_safedog.html" target="_blank;">下载服务器安全狗</a></dd>
+           </dl>
+           <div style="padding-top:30px;width: 250px;">2、在服务器上安装并运行安全狗软件</div>
+           <div style="padding-top:36px;">3、点击软件界面右上角”加入服云“，登录服云帐号，即可完成添加</div>
+           <div style="padding:30px 0;position: relative;">手动添加：<a href="http://fuyun.safedog.cn/cert/certDownload.html?redirectURL=/serverCenter/index.html" target="_blank;">下载证书</a>并存放到服务器指定文件夹，
+           	<a href="http://bbs.safedog.cn/thread-75148-1-1.html" target="_blank;">详情</a>
+           </div>
+         </div>
+       </div>
+              
+        
+        
+        
+      </div>
+    </div>
+  </div>
+    
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+
+		
+
+</body></html>

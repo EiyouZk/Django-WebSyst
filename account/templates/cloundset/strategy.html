@@ -1,0 +1,642 @@
+{% extends "clound_base.html" %}
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+
+{% block title %}安全策略{% endblock %}
+
+{% block  script %}
+	<!-- 保存安全策略 -->
+	function Savestrategy()
+	{
+		var name = document.getElementById('strategy_name').value; 
+		var type = document.getElementById('strategy_type').value;
+		if('' == name)
+		{
+			alert('策略名称不能为空');
+			return;
+		}
+
+        if(-1 != name.indexOf('\\'))
+        {
+            alert('策略名称不能包含特殊字符\'\\\'!');
+			return;
+        }
+
+		$.get("../savestrategy",{'user':'{{user.username}}','strategyname':name,'type':type}, function(ret)
+		{
+			if(ret == 'success')
+			{
+				alert('保存自定义策略成功');
+				window.location.reload();
+			}
+			else
+			{
+				alert('保存自定义策略失败');
+			}
+		}
+		)
+	}
+
+    <!--选择策略，背景色的改变-->
+	var checkedtr = '';
+	function checkstrategy(trid)
+	{
+		var tmptr = trid.replace("strategy_","");
+
+        var bkcss= document.getElementById(trid).style.background;
+        if('' == bkcss)
+		{
+            checkedtr += tmptr + ';';
+            document.getElementById(trid).setAttribute("style","background:rgba(20, 102, 215, 0.45098039215686275);;color: white;");
+        }
+        else
+        {
+            checkedtr = checkedtr.replace(tmptr+';',"");
+            document.getElementById(trid).setAttribute("style","background:;color:;");
+        }
+        console.log(checkedtr);
+	}
+
+    <!--删除策略-->
+	function Delstrategy()
+	{
+		if(checkedtr=='')
+		{
+            alert("选中模版执行删除！");
+			return;
+		}
+
+		while(checkedtr.indexOf("strategy_")>-1)
+		{
+			checkedtr = checkedtr.replace("strategy_","")
+		}
+
+		if(checkedtr.indexOf("strategy_sys")>-1)
+		{
+			alert("选中项包括了系统提供模版，无法删除！");
+			return;
+		}
+
+		$.get("../delstrategy",{'user':'{{user.username}}','checkedtr':checkedtr}, function(ret)
+		{
+			if(ret == 'success')
+			{
+				alert('删除自定义策略成功');
+				window.location.reload();
+			}
+			else
+			{
+				alert('删除自定义策略失败');
+			}
+		}
+		)
+	}
+
+    <!--转化值-->
+    function changvalue(status)
+    {
+        return ('False' == status)?false:true;
+    }
+
+    <!--选择策略下发按钮-->
+	var checkedstrategy = '';
+    var sysfireset = '';
+    var netfireset = '';
+	function SetStrategyto(strategyid)
+	{
+        sysfireset = '';
+        netfireset = '';
+		checkedstrategy = '';
+
+		if('strategy_sys_1' == strategyid)
+		{
+			checkedstrategy = 'Windows安全防护官方模板';
+			{% for server in serverinfo %}
+				if('{{server.strategyname}}' == 'Windows安全防护官方模板')
+				{
+					var invalue = "<tr id='{0}' onclick='checkserverout({1});'><td>{{server.servername}}</td></tr>".format('{{server.id}}','{{server.id}}');
+					$("#instrategy tr:eq(0)").after(invalue);
+				}
+				else
+				{
+					var value = "<tr id='{0}' onclick='checkserver({1});'><td>{{server.servername}}</td></tr>".format('{{server.id}}','{{server.id}}');
+					$("#outstrategy tr:eq(0)").after(value);
+				}
+			{% endfor %}
+		}
+
+		{% for strategy in strategies %}
+			if('{{strategy.id}}' == strategyid)
+			{
+				checkedstrategy = "{{strategy.strategyname}}";
+				{% for server in serverinfo %}
+					if('{{server.strategyname}}' == '{{strategy.strategyname}}')
+					{
+						var invalue = "<tr id='{0}' onclick='checkserverout({1});'><td>{{server.servername}}</td></tr>".format('{{server.id}}','{{server.id}}');
+						$("#instrategy tr:eq(0)").after(invalue);
+					}
+					else
+					{
+						var value = "<tr id='{0}' onclick='checkserver({1});'><td>{{server.servername}}</td></tr>".format('{{server.id}}','{{server.id}}');
+						$("#outstrategy tr:eq(0)").after(value);
+					}
+				{% endfor %}
+                sysfireset = '{"method": "sysfirewallmaincfig", "param": {"ACCOUNT": {0},"FILE": {1},"REGISTER": {2},"DEVICE": {3},"PROCESS": {4},"REMOTE": {5},"WHITE": {6}} }'.format(changvalue('{{strategy.account_prot}}'),changvalue('{{strategy.file_prot}}'),changvalue('{{strategy.registry_prot}}'),changvalue('{{strategy.outside_control}}'),changvalue('{{strategy.process_behavior}}'),changvalue('{{strategy.remote_login_remind}}'),changvalue('{{strategy.whitelist_access_control}}'));
+                netfireset = '{"method": "netfirewallmaincfig", "param": {"ARPFireWall": {0},"DDosFireWall": {1},"WebFireWall": {2},"FTPProtect": {3},"RemoteProtect": {4},"MySQLProtect": {5},"MSSQLProtect": {6},"ForbidPing": {7},"PortPolicy": {8},"BlakcList": {9},"WhiteList": {10}} }'.format(changvalue('{{strategy.ARPfirwall}}'),changvalue('{{strategy.DDosfirwall}}'),changvalue('{{strategy.Web_firwall}}'),changvalue('{{strategy.FTP_avoidviolence}}'),changvalue('{{strategy.ReDesktop_avoidviolence}}'),changvalue('{{strategy.MySQL_avoidviolence}}'),changvalue('{{strategy.MSSQL_avoidviolence}}'),changvalue('{{strategy.port_security}}'),changvalue('{{strategy.forbid_ping}}'),changvalue('{{strategy.super_blacklist}}'),changvalue('{{strategy.super_whitelist}}'));
+            }
+		{% endfor %}
+	}
+
+    <!--选择服务器-->
+	var selectedserver = '';
+    var serverdict = new Dictionary();
+	function checkserver(trid)
+	{		
+		var bkcss = document.getElementById(trid).style.background;
+		if('' == bkcss)
+		{
+			selectedserver += trid + ';';
+			document.getElementById(trid).setAttribute("style","background:rgba(20, 102, 215, 0.45098039215686275);;color: white;");
+		}
+		else
+		{
+			selectedserver = selectedserver.replace(trid+';',"");
+			document.getElementById(trid).setAttribute("style","background:;color:;");
+		}		
+		console.log(selectedserver);
+
+
+        <!--{% for server in serverinfo %}-->
+            <!--if('{{server.id}}' == trid)-->
+			<!--{-->
+                <!--if('' == serverdict.get(trid))-->
+                <!--{-->
+                    <!--serverdict.set(trid,installWebsocket('{{server.serverip}}'));-->
+                <!--}-->
+                <!--else-->
+                <!--{-->
+                    <!--serverdict.remove(trid);-->
+                <!--}-->
+            <!--}-->
+        <!--{% endfor %}-->
+	}
+
+    <!--加密要发送的数据-->
+    function EncryptMsg(msg,websocket,ip)
+    {
+
+        $.get("../encryptmsg",{'msg':msg,'serverip':ip}, function(ret)
+        {
+            websocket.send(ret);
+            console.log("send done");
+        }
+        )
+    }
+
+    <!--下发策略-->
+    function downStrategy(websocket,ip)
+    {
+        EncryptMsg(sysfireset,websocket,ip);
+        EncryptMsg(netfireset,websocket,ip);
+    }
+
+    <!--&lt;!&ndash;初始化建立连接&ndash;&gt;-->
+    <!--function installWebsocket(ip)-->
+    <!--{-->
+        <!--var wsUri = "ws://{0}:8000".format(ip);-->
+        <!--var websocket = null;-->
+
+        <!--try-->
+        <!--{-->
+            <!--if (typeof MozWebSocket == 'function')-->
+            <!--{-->
+                <!--WebSocket = MozWebSocket;-->
+            <!--}-->
+
+            <!--if ( websocket && websocket.readyState == 1 )-->
+            <!--{-->
+                <!--websocket.close();-->
+            <!--}-->
+
+            <!--websocket = new WebSocket( wsUri );-->
+
+        <!--}-->
+        <!--catch(exception)-->
+        <!--{-->
+
+        <!--}-->
+        <!--return websocket;-->
+    <!--}-->
+
+    <!--开始下发-->
+	function MoveServerto()
+	{
+		if(selectedserver=='')
+		{
+			return;
+		}
+
+		while(selectedserver.indexOf("server_")>-1)
+		{
+			selectedserver = selectedserver.replace("server_","")
+		}
+
+        ShowDiv('maskdiv','bkfade');
+		$.get("../moverserverto",{'user':'{{user.username}}','obj':'in','selectedserver':selectedserver,'strategy':checkedstrategy}, function(ret)
+		{
+			if(ret == 'success')
+			{
+				var serverarray = new Array();
+				serverarray = selectedserver.split(";");
+
+				for (i=0; i<serverarray.length; i++ )
+				{
+					var selectedserverid = serverarray[i];
+					{% for server in serverinfo %}
+						if('{{server.id}}' == selectedserverid)
+						{
+                            <!--downStrategy(serverdict.get('{{server.id}}'),'{{server.serverip}}');-->
+							$("#{{server.id}}").remove();
+							var invalue = "<tr id='{0}' onclick='checkserverout({1});'><td>{{server.servername}}</td></tr>".format('{{server.id}}','{{server.id}}');
+							$("#instrategy").append(invalue);
+						}
+					{% endfor %}
+				}
+
+				selectedserver='';
+			}
+			else
+			{
+				alert('修改策略操作失败！');
+                window.location.reload();
+			}
+            CloseDiv('maskdiv','bkfade');
+		})
+	}
+
+    <!--选中服务器，移除-->
+	var selectedserverout = '';
+	function checkserverout(trid)
+	{	
+		var bkcss = document.getElementById(trid).style.background;
+		if('' == bkcss)
+		{
+			selectedserverout += trid + ';';
+			document.getElementById(trid).setAttribute("style","background:rgba(20, 102, 215, 0.45098039215686275);;color: white;");
+		}
+		else
+		{
+			selectedserverout = selectedserverout.replace(trid+';',"");
+			document.getElementById(trid).setAttribute("style","background:;color:;");
+		}
+	}
+
+
+    <!--移除服务器-->
+	function MoveServerout()
+	{
+		if(selectedserverout =='')
+		{
+			return;
+		}
+
+		while(selectedserverout.indexOf("server_")>-1)
+		{
+			selectedserverout = selectedserverout.replace("server_","")
+		}
+
+		$.get("../moverserverto",{'user':'{{user.username}}','obj':'out','selectedserver':selectedserverout,'strategy':checkedstrategy}, function(ret)
+		{
+			if(ret == 'success')
+			{
+				var serverarray = new Array();
+				serverarray = selectedserverout.split(";");
+				for (i=0; i<serverarray.length; i++ )
+				{
+					var selectedserverid = serverarray[i];
+					{% for server in serverinfo %}
+						if('{{server.id}}' == selectedserverid)
+						{
+							$("#{{server.id}}").remove();
+							var value = "<tr id='{0}' onclick='checkserver({1});'><td>{{server.servername}}</td></tr>".format('{{server.id}}','{{server.id}}');
+							$("#outstrategy").append(value);
+						}
+					{% endfor %}
+				}
+				selectedserverout = '';
+			}
+			else
+			{
+				alert('修改策略操作失败！');
+                window.location.reload();
+			}
+		})
+	}
+
+	var pageSize = 10;
+    var curPage=0;        
+    var lastPage;       
+    var direct=0;       
+    var len;            
+    var page;            
+    var begin;
+    var end;
+	$(document).ready(function display()
+	{
+		len =$("#table-strtemp tr").length - 1;
+        page=len % pageSize==0 ? len/pageSize : Math.floor(len/pageSize)+1;
+		// alert("page==="+page);
+				curPage=1;    // 设置当前为第一页
+		displayPage(1);//显示第一页
+
+		<!--document.getElementById("btn0").innerHTML="当前 " + curPage + "/" + page + " 页    每页 ";-->
+		document.getElementById("btn0").innerHTML="当前 " + curPage + "/" + page + " 页    ";
+		document.getElementById("sjzl").innerHTML="共" + Math.ceil(len/pageSize) + "页";
+		document.getElementById("pageSize").value = pageSize;
+
+		createNumBtn(page,curPage);
+
+		$("#btn1").click(function firstPage()
+		{
+		    curPage=1;
+		    direct = 0;
+		    displayPage();
+		});
+		$("#btn2").click(function frontPage(){
+		    direct=-1;
+		    displayPage();
+		});
+		$("#btn3").click(function nextPage(){
+		    direct=1;
+		    displayPage();
+		});
+		$("#btn4").click(function lastPage(){
+		    curPage=page;
+		    direct = 0;
+		    displayPage();
+		});
+		$("#btn5").click(function changePage(){
+		    curPage=document.getElementById("changePage").value * 1;
+		    if (!/^[1-9]\d*$/.test(curPage)) {
+		        alert("请输入正整数");
+		        return ;
+		    }
+		    if (curPage > page) 
+			{
+		        alert("超出数据页面");
+		        return ;
+		    }
+		    direct = 0;
+		    displayPage();
+		});
+
+                
+		$("#pageSizeSet").click(function setPageSize()
+		{
+		    pageSize = document.getElementById("pageSize").value;
+		    if (!/^[1-9]\d*$/.test(pageSize)) {
+		        alert("请输入正整数");
+		        return ;
+		    }
+		    len =$("#mytable tr").length - 1;
+		    page=len % pageSize==0 ? len/pageSize : Math.floor(len/pageSize)+1;
+		    curPage=1;
+		     direct=0;
+		     firstPage();
+		});
+
+        $("#changePage").keydown(function(e)
+        {
+           if (e.keyCode == 13)
+            {
+                curPage=document.getElementById("changePage").value * 1;
+                if (!/^[1-9]\d*$/.test(curPage)) {
+                    alert("请输入正整数");
+                    return ;
+                }
+                if (curPage > page)
+                {
+                    alert("超出页面数据");
+                    return ;
+                }
+                direct = 0;
+                displayPage();
+            }
+        });
+	});
+
+	function firstPage()
+	{
+	    curPage=1;
+	    direct = 0;
+	    displayPage();
+	}
+
+	//请求数据页面跳转方法
+	function goPage(btn)
+	{
+		curPage= Number(btn);
+		direct = 0;
+	    displayPage();
+	}
+
+	//创建数字按钮
+    function createNumBtn(totalpage,page)
+	{
+        //page是页面index从0开始，这里的page加减一要注意
+        var str='';
+		//此页左边右边各pager.numBtnCount个数字按钮
+		//此页左边有pager.numBtnCount页 page页码从0开始
+        for(var m=0;m<totalpage;m++)
+		{
+			if(m>(page-5) && m<(page+5))
+			{
+				if(m==page-1)
+				{
+				str+='<button data-page="'+(m+1)+'" style="color:red;">'+(m+1)+'</button>';
+				}
+				else
+				{
+				str+='<button data-page="'+(m+1)+'">'+(m+1)+'</button>';
+				}
+			}
+		}
+
+        $('.num-box-nick').html(str);
+
+        //每个btn绑定请求数据页面跳转方法
+        $('.num-box-nick'+' button').each(function(i,v){
+            $(this).click(function(){
+                goPage(v.getAttribute('data-page'));
+            });
+        });
+    }
+
+	function displayPage()
+	{
+		if(curPage <=1 && direct==-1)
+		{
+		    direct=0;
+		    alert("已经是第一页了");
+		    return;
+		} else if (curPage >= page && direct==1)
+		{
+		    direct=0;
+		    alert("已经是最后一页了");
+		    return ;
+		}
+
+		lastPage = curPage;
+
+		<!-- // 修复当len=1时，curPage计算得0的bug -->
+		if (len > pageSize)
+		{
+		    curPage = ((curPage + direct + len) % len);
+		} else
+		{
+		    curPage = 1;
+		}
+
+		createNumBtn(page,curPage);
+
+		<!--document.getElementById("btn0").innerHTML="当前 " + curPage + "/" + page + " 页    每页 ";-->
+		document.getElementById("btn0").innerHTML="当前 " + curPage + "/" + page + " 页";
+
+
+		<!-- 起始记录号 -->
+		begin=(curPage-1)*pageSize + 1;
+		<!-- // 末尾记录号 -->
+		end = begin + 1*pageSize - 1;
+
+		if(end > len ) end=len;
+		$("#table-strtemp tr").hide();
+		<!-- // 首先，设置这行为隐藏 -->
+		$("#table-strtemp tr").each(function(i)
+		{
+			<!-- // 然后，通过条件判断决定本行是否恢复显示 -->
+			<!-- //显示begin<=x<=end的记录 -->
+		    if((i>=begin && i<=end) || i==0 )
+		        $(this).show();
+		});
+	}
+
+{% endblock %}
+
+
+{% block content %}
+<div id="strategy_fade" class="black_overlay"></div>
+	<div class="strategyzk">
+		<div class="setleft">
+			<div style="background: rgb(58, 90, 136);" class="settingbtn"><a style="color: rgb(255, 255, 255);" href="{% url 'strategy' %}">Windows安全策略</a></div>
+			<div class="settingbtn"><a style="color: rgb(255, 255, 255);" href="{% url 'strategylinux' %}">Linux安全策略</a></div>
+		</div>
+        <div id="maskdiv" class="white_content" style="height:600px;width:860px;left: 32%;top: 20%;background:rgba(255, 255, 255, 0.15);;border: none;box-shadow: none;z-index:1005">
+            <img style="padding-top:27%;" src="{% static 'images/loading2.gif' %}" alt="退出" />
+        </div>
+		<div style="padding-left: 16%;overflow: hidden;">
+			<div class="cont_siderbar" style="padding-right: 10px;">
+				<div class="cont_cz">
+                    <div class="icon_trash_a" onclick="Delstrategy();"></div>
+					<div class="icon_tj_a" onclick="ShowDiv('strategy_add','fade');"></div>
+				</div>
+			</div>
+		    <div style="margin-top:5px; border-top:1px solid #cccccc;background:#f5f9fa;">
+				<table style="line-height:41px;margin:10px; width: 99%;" id="table-strtemp" width="100%" border="0" cellspacing="0" cellpadding="0" class="my_table">
+						<tr class="table_bt_gray" style="background: antiquewhite;border-bottom: 1px solid rgb(230, 189, 189);">
+							<td width="25%">安全策略模板</td>
+							<td width="20%">全部类型</td>
+							<td width="15%">全部来源</td>
+							<td width="15%">添加时间</td>
+							<td width="15%">服务器（已下发/总数）</td>
+							<td width="20%">操作</td>
+						</tr>
+						{% for strategy in strategies %}
+							<tr id="strategy_{{strategy.id}}" onclick="checkstrategy('strategy_{{strategy.id}}');">
+								<td>{{strategy.strategyname}}</td>
+								<td>{{strategy.type}}</td>
+								<td><span class="temptype">{% if 'user' == strategy.source %}用户模版{% else %}官方模版{% endif %}</span></td>
+								<td>{{strategy.time}}</td>
+								<td>{{strategy.count}}/{{servernum}}</td>
+								<td>
+									<div>
+										<a {% if 'user' == strategy.source %} href="../strategytemp/?strategyid={{strategy.id}}" {% else %} href="javascript:;" {% endif %}><img title="设置模版" style="height:35px;" src="{% static 'images/set.png' %}" /></a>
+										<a href="javascript:;"><img title="选择服务器下发模版" style="height:30px;" src="{% static 'images/down.png' %}"  onclick="ShowDiv('strategy_set','bkfade');SetStrategyto('{{strategy.id}}');"/></a>
+									</div>
+								</td>
+							</tr>
+						{% endfor %}
+				</table>
+				<div style="padding-top: 12px;text-align:center;">
+					<a  href="#" id="btn1">首页</a>
+					<a  href="#" id="btn2" style="border: 1px solid #cccccc;padding: 5px;">上一页</a>
+					<a id="btn0" style="display:none;"></a>
+					<span class="num-box-nick">
+					</span>
+					<input id="pageSize" type="text" size="1" maxlength="2" value="getDefaultValue()" style="border: unset;display:none;"/>
+					<!--<a> 条 </a>-->
+					<!--<a href="#" id="pageSizeSet">设置</a>-->
+					<a  href="#" id="btn3" style="border: 1px solid #cccccc;padding: 5px;">下一页</a>
+					<a  href="#" id="btn4">尾页</a>
+					<a id="sjzl"></a>
+					<a>转到 </a>
+					<input id="changePage" type="text" onkeyup="this.value=this.value.replace(/\D/g,'')"  onafterpaste="this.value=this.value.replace(/\D/g,'')" size="1" maxlength="4" style="padding: 5px;width: 35px;border: 1px solid #cccccc;"/>
+					<a>页</a>
+					<a href="#" id="btn5">跳转</a>
+				</div>
+		    </div>
+	        <div id="strategy_add" class="white_content" style="top: 300px;left: 45%;;width:390px;height:260px;text-align:unset;">
+				<div style="cursor:default;height:45px;background: #436fac;">
+					<p id="login_protIp_titleid" style="font-size: 23px;color:white;width: 50%;float: left;padding-left: 10px;margin: unset;">添加安全策略模版</p>
+					<a style="float:right;" href="javascript:;" onclick="CloseDiv('strategy_add','fade')"><img style="padding-right:10px;padding-top:7px;" src="{% static 'images/close.png' %}" alt="退出"/></a>
+				</div>
+				<div style="padding-left: 50px;font-size: 20px;height: 120px;padding-top: 20px;">
+					<div style="padding-top: 15px;">
+						<span>名称：</span>
+						<input id="strategy_name" type="text" maxlength="32" class="inputzk" style="width: 200px;padding: unset;height: 30px;" value="" placeholder="请输入自定义策略名"/>
+					</div>
+					<div style="padding-top: 15px;">
+						<span>类型：</span>
+						<input id="strategy_type" type="text" class="inputzk" style="width: 200px;padding: unset;height: 30px;" value="Windows" disabled="disabled"/>
+					</div>
+				</div>
+				<div style="text-align: center;padding-top: 40px;">
+					<button id="login_protIp_apply" onclick="Savestrategy();CloseDiv('strategy_add','fade');" style="width:80px;">确定</button>
+				</div>
+		    </div>
+	    	<div id="strategy_set" class="strategy_setclass">
+				<div style="cursor:default;height:55px;background: #436fac;">
+					<p id="" style="font-size: 23px;color:white;width: 30%;float: left;padding-left: 10px;margin: unset;padding-top: 10px;">下发策略模版到服务器</p>
+					<a style="float:right;" href="javascript:;" onclick="CloseDiv('strategy_set','bkfade');window.location.reload();"><img style="padding-right:10px;padding-top:7px;" src="{% static 'images/close.png' %}" alt="退出"/></a>
+				</div>
+				<div style="font-size: 18px;margin: 10px;">
+					<span id="strategy_title" style="display:block;float:left;width: 35%;">下发选中策略到服务器：</span>
+					<span id="strategy_server" style="display:block;overflow: hidden;">策略模版下的服务器：</span>
+				</div>
+				<div style="float:left;width:360px;border:1px solid #cccccc;height: 480px;margin: 10px;background: whitesmoke;">
+					<table id="outstrategy" class="my_table" style="width: 100%;line-height: 40px;font-size: 18px;">
+						<tr style="background: antiquewhite;">
+							<td style="font-size: 22px;">
+								服务器名
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div style="float:left;width:80px;margin: 182px 10px 0px 10px;">
+					<a href="javascript:;" onclick="MoveServerto();"><img title="添加服务器到模版" style="" src="{% static 'images/toright.png' %}" /></a>
+					<a href="javascript:;" onclick="MoveServerout();"><img title="从模版移除服务器" style="margin-top: 20px;margin-left: -17px;" src="{% static 'images/toleft.png' %}" /></a>
+				</div>
+				<div style="width:360px;border:1px solid #cccccc;height: 480px;margin-top: 20px;overflow:hidden;margin-left: 50px;background: #ffffff99;">
+					<table id="instrategy" class="my_table" style="width: 100%;line-height: 40px;font-size: 18px;">
+						<tr style="background: antiquewhite;">
+							<td style="font-size: 22px;">
+								服务器名
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+    </div>
+    
+{% endblock %}

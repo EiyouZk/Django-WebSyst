@@ -1,0 +1,81 @@
+{% extends "clound_base.html" %}
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+
+{% block title %}设置管理{% endblock %}
+
+{% block content %}	
+    <div class="contentsettingzk" >
+		<div class="setleft">
+			<div style="background: rgb(58, 90, 136);" class="settingbtn" ><a style="color: rgb(255, 255, 255);" href="{% url 'securityset' %}">风险管理</a></div>
+			<div class="settingbtn"><a style="color: rgb(255, 255, 255);" href="{% url 'servermanage' %}">服务器管理</a></div>
+		</div>
+		<div class="setright">
+			<div style="background:#ffffff;height:96%;margin:20px;">
+				<div style="border-top:1px rgb(230, 189, 189) solid;border-right:1px rgb(230, 189, 189) solid;border-left:1px rgb(230, 189, 189) solid;padding:10px;">
+					<h4 style="color:#193b6a;font-size: 24px">&nbsp;高风险主机列表</h4>
+				</div>
+				<div style="padding:10px;line-height: 20px;border-left: 1px rgb(230, 189, 189) solid;border-right: 1px rgb(230, 189, 189) solid;">
+				  <ul class="keywordli" id="choseTypeUl">
+						<li><a href="javascript:void(0);" onclick="changeType(this,'');"  id="li_unprocess_all" class="keyword_select_a_select">全部(<span>0</span>)</a></li>
+						<li><a href="javascript:void(0);" onclick="changeType(this,'01');" id="li_unprocess_01">系统漏洞(<span>0</span>)</a></li>
+						<li><a href="javascript:void(0);" onclick="changeType(this,'10');" id="li_unprocess_10">网站漏洞(<span>0</span>)</a></li>
+						<li><a href="javascript:void(0);" onclick="changeType(this,'08');" id="li_unprocess_08">高危进程(<span>0</span>)</a></li>
+						<li><a href="javascript:void(0);" onclick="changeType(this,'09');" id="li_unprocess_09">弱口令(<span>0</span>)</a></li>
+						<li><a href="javascript:void(0);" onclick="changeType(this,'03');" id="li_unprocess_03">高危账号(<span>0</span>)</a></li>
+						<li><a href="javascript:void(0);" onclick="changeType(this,'06');" id="li_unprocess_06">木马文件(<span>0</span>)</a></li>
+						<li><a href="javascript:void(0);" onclick="changeType(this,'11');" id="li_unprocess_11">配置缺陷(<span>0</span>)</a></li>
+						<li><a href="javascript:getProcessed(1);" id="li_process_all">历史记录</a></li>
+					  </ul>
+				</div>
+				<div style="height: 52px;background: white;border-bottom: 1px rgb(230,189, 189) solid;border-left: 1px rgb(230, 189, 189) solid;border-right: 1px rgb(230, 189, 189) solid;padding-bottom:10px;">
+					<div style="padding-top:5px; width:110px; float:left; height:31px; border-right:0 none;padding-left:40px;margin: 10px;">
+						服务器IP：
+					</div>
+					<div style="width:190px; float:left;padding-top:10px;padding-left:5px;" >
+					<input id="ipValueTB" type="text" class="input" value="" onkeypress="if(event.keyCode==13){search(); return false;}" placeholder="IP地址"></input>
+					</div>
+					<div id="flawDiv" style="width:90px; float:left; height:31px; border-right:0 none; padding-top: 15px;padding-left:20px;">
+						系统漏洞：
+					</div>
+					<div style="width:190px; float:left;padding-top:10px;" >
+					<input id="flawValueTB" type="text" class="input" value="" onkeypress="if(event.keyCode==13){search(); return false;}" placeholder="漏洞编号"/>
+					</div>
+					<div class="btn_gray_a" style="float:left; width:60px; margin-left:25px;padding-top:18px;" onclick="javascript:search();"><a style="border: 1px rgb(230, 189, 189) solid;padding:5px 12px 5px 12px;background:#efefef;border-radius: 50px;" href="#">搜索</a></div>
+				</div>
+				<div class="border" style="margin-top:15px;">
+					<table width="100%" border="0" align="center" cellpadding="0"
+						cellspacing="0" class="table" id="servertable">
+						<thead>
+							<tr class="table_bt_gray">
+								<td width="15%">服务器</td>
+								<td width="20%">漏洞数量</td>
+								<td width="20%">漏洞概览</td>
+								<td width="15%">检查时间</td>
+								<td width="10%">状态</td>
+								<td width="10%">操作</td>
+							</tr>
+						</thead>
+						<tbody>
+							{% for server in serverinfo %}
+								<tr>
+									<td width="25%"><a target="_blank" href="../singleserver/?serverid={{server.id}}">{{server.servername}}({{server.serverip}})</a></td>
+									<td width="10%">186</td>
+									<td width="20%"><div class="textcss">KB4034679,KB4022722,KB4012212,KB4012215,KB3212642,KB3212646,KB3205394,KB3197867,KB3185330,KB4022722,KB4012212,KB4012215,KB3212642,KB3212646,KB3205394,KB3197867,KB3185330</div></td>
+									<td width="15%">2017-10-13 09:16:00</td>
+									<td width="10%"><span class="serverstatusbad">未修复</span></td>
+									<td width="10%"><a href="#">修复</a></td>
+								</tr>
+							{% empty %}
+								<tr><td colspan="6" class=""><p style="text-align: center;" ><span class="dashservername">本账户暂未绑定任何服务器。</span></p></td></tr>				
+							{% endfor %}						
+						</tbody>
+					</table>
+				  </div>  
+				
+			</div>
+		</div>  
+	</div>
+    
+{% endblock %}

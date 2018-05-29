@@ -1,0 +1,384 @@
+{% extends "clound_base.html" %}
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+
+{% block title %}策略模版-{{strategy.strategyname}}{% endblock %}
+
+{% block  script %}
+
+    $(document).ready(function()
+    {
+        <!-- 加载设置内容 -->
+        <!--第一阶段-->
+        $.get("../installsetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','obj':'install'}, function(ret)
+        {
+            loadret(ret);
+        })
+    });
+
+    
+    $(document).ready(function()
+    {
+        $("#account_prot").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'account_prot'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+
+        $("#file_prot").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'file_prot'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#registry_prot").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'registry_prot'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#outside_control").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'outside_control'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#process_behavior").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'process_behavior'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#app_control").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'app_control'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#remote_login_remind").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'remote_login_remind'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#whitelist_access_control").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'whitelist_access_control'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#nochangadmin_pass").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'nochangadmin_pass'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#usergroup_prot").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'usergroup_prot'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#ARPfirwall").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'ARPfirwall'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+
+        $("#DDosfirwall").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'DDosfirwall'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#Web_firwall").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'Web_firwall'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#FTP_avoidviolence").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'FTP_avoidviolence'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#ReDesktop_avoidviolence").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'ReDesktop_avoidviolence'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#MySQL_avoidviolence").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'MySQL_avoidviolence'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#MSSQL_avoidviolence").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'MSSQL_avoidviolence'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#port_security").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'port_security'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#forbid_ping").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'forbid_ping'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#super_blacklist").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'super_blacklist'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+
+        $("#super_whitelist").click(function()
+        {
+            $.get("../savesetting",{'strategyid':'{{strategy.id}}','serverid':'{{server.id}}','type':'','obj':'super_whitelist'}, function(ret)
+            {
+                loadret(ret);
+            })
+        });
+    });
+
+    function loadret(ret)
+    {
+        var retvalue = ret.replace('{', '');
+
+        retvalue = retvalue.replace(/"/g, '');
+        retvalue = retvalue.replace('}', '');
+        var retarray = retvalue.split(",");
+        for(var i=0;i<retarray.length;i++)
+        {
+            var feature = retarray[i];
+            if('' == feature)
+            {
+                continue;
+            }
+
+            var elementid =  (feature.split(":"))[0];
+            var featureid = "#" + elementid;
+            var featurestatus = (feature.split(":"))[1];
+
+            if(1 == featurestatus)
+            {
+                $(featureid).removeClass("icon_close_a");
+                $(featureid).addClass("icon_open_a");
+            }else
+            {
+                $(featureid).removeClass("icon_open_a");
+                $(featureid).addClass("icon_close_a");;
+            }
+        }
+    }
+
+
+{% endblock %}
+
+{% block content %}    
+    <div class="contentsettingzk" >
+        <div class="setleft">
+            <div class="settingbtn" style="rgb(58, 90, 136);"><a id="sysfirewall_a" style="color: rgb(255, 255, 255);" onclick="chooseMode('sysfirewall_a');" href="#sysfirewall">策略设置中心</a></div>
+            <!--<div class="settingbtn" ><a id="netfirewall_a" style="color: rgb(255, 255, 255);" onclick="chooseMode('netfirewall_a');" href="#netfirewall">网络防火墙</a></div>-->
+            <!--<div class="settingbtn"><a id="portprot_a" style="color: rgb(255, 255, 255);"  onclick="chooseMode('portprot_a');" href="#portprot">端口保护</a></div>-->
+            <!--<div class="settingbtn" style="rgb(58, 90, 136);"><a id="superlist_a" style="color: rgb(255, 255, 255);" onclick="chooseMode('superlist_a');" href="#superlist">超级黑白名单</a></div>-->
+        </div>
+        <div style="float:right;height:100%;width:84%; background:#f3f7f9;">                        
+            <div style="background:#ffffff;height:85%;margin:20px;">                
+                <div style="padding-top:10px;border-bottom: 1px rgb(230, 189, 189) solid;padding-bottom:10px;">
+                    <div id="sysfirewall" style="height:40px;margin:10px;background: rgba(202, 151, 83, 0.1803921568627451);padding-top:1px;">
+                        <h4 style="padding-left:15px;color:#0000008f;">系统防火墙</h4>
+                    </div>
+                    <div style="height:220px;background:#f3f7f9;margin-left: 10px;margin-right: 10px;">
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">文件保护：</li>
+                            <li style="border:none;width: 200px;">
+                                <form action="." method="get">
+                                    <div id="file_prot"></div>
+                                </form>
+                            </li>
+                        </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">注册表保护：</li>
+                            <li style="border:none;width: 200px;">
+                                <form action="." method="get">
+                                    <div id="registry_prot"></div>
+                                </form>
+                            </li>
+                        </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">进程行为控制：</li>
+                            <li style="border:none;width: 200px;">
+                                <form action="." method="get">
+                                    <div id="process_behavior"></div>
+                                </form></li>
+                        </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">登录保护:</li>
+                            <li style="border:none;width: 200px;">
+                                <form action="." method="get">
+                                    <div id="whitelist_access_control"></div>
+                                </form>
+                            </li>
+                         </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">外围控制:</li>
+                            <li style="border:none;width: 200px;">
+                                <form action="." method="get">
+                                    <div id="outside_control"></div>
+                                </form>
+                            </li>
+                        </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">异地登录提醒:</li>
+                            <li style="border:none;width: 200px;">
+                                <form action="." method="get">
+                                    <div id="remote_login_remind"></div>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>                    
+                    <div id="netfirewall" style="height:40px;margin:10px;background: rgba(202, 151, 83, 0.1803921568627451);padding-top:1px;">
+                        <h4 style="padding-left:15px;color:#0000008f;">网络防火墙</h4>
+                    </div>
+                    <div style="height:275px;background:#f3f7f9;margin-left: 10px;margin-right: 10px;">
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">ARP防火墙：</li>
+                            <li style="border:none;width: 200px;">
+                                <form action="." method="get">
+                                    <div id="ARPfirwall"></div>
+                                </form></li>
+                        </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">DDoS防火墙：</li>
+                            <li style="border:none;width: 200px;"><form action="." method="get">
+                                    <div id="DDosfirwall"></div>
+                                </form></li>
+                        </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">Web防火墙：</li>
+                            <li style="border:none;width: 200px;"><form action="." method="get">
+                                    <div id="Web_firwall"></div>
+                                </form></li>
+                        </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">FTP防暴力破解：</li>
+                            <li style="border:none;width: 200px;"><form action="." method="get">
+                                    <div id="FTP_avoidviolence"></div>
+                                </form></li>
+                        </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">远程桌面防暴力破解：</li>
+                            <li style="border:none;width: 200px;"><form action="." method="get">
+                                    <div id="ReDesktop_avoidviolence"></div>
+                                </form></li>
+                        </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">MySQL防暴力破解：</li>
+                            <li style="border:none;width: 200px;"><form action="." method="get">
+                                    <div id="MySQL_avoidviolence"></div>
+                                </form></li>
+                        </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">MSSQL防暴力破解：</li>
+                            <li style="border:none;width: 200px;"><form action="." method="get">
+                                    <div id="MSSQL_avoidviolence"></div>
+                                </form></li>
+                        </ul>
+                    </div>
+                    <div id="portprot" style="height:40px;margin:10px;background: rgba(202, 151, 83, 0.1803921568627451);padding-top:1px;">
+                        <h4 style="padding-left:15px;color:#0000008f;">端口保护</h4>
+                    </div>
+                    <div style="height:90px;background:#f3f7f9;margin-left: 10px;margin-right: 10px;">
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">端口安全策略：</li>
+                            <li style="border:none;width: 200px;">
+                                <form action="." method="get">
+                                    <div id="port_security"></div>
+                                </form></li>
+                        </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">禁止ping本机：</li>
+                            <li style="border:none;width: 200px;">
+                                <form action="." method="get">
+                                    <div id="forbid_ping"></div>
+                                </form></li>
+                        </ul>
+                    </div>
+                    <div style="height:40px;margin:10px;background: rgba(202, 151, 83, 0.1803921568627451);padding-top:1px;">
+                        <h4 style="padding-left:15px;color:#0000008f;">超级黑白名单</h4>
+                    </div>
+                    <div style="height:90px;background:#f3f7f9;margin-left: 10px;margin-right: 10px;">
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">超级黑名单：</li>
+                            <li style="border:none;width: 200px;">
+                                <form action="." method="get">
+                                    <div id="super_blacklist"></div>
+                                </form>
+                            </li>
+                        </ul>
+                        <ul class="ulzk" style="border:none;padding-top:20px;height:18px;text-align:left;">
+                            <li style="border:none;width: 200px;">超级白名单：</li>
+                            <li style="border:none;width: 200px;">
+                                <form action="." method="get">
+                                    <div id="super_whitelist"></div>
+                                </form>
+                            </li>
+                            </ul>
+                    </div>
+                </div>                                   
+            </div>
+        </div>  
+    </div>
+    
+{% endblock %}
