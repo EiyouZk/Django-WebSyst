@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}登录{% endblock %}
+
+{% block content %}
+	<div class="otherpage">
+		<h1 >登录</h1>
+		<br/>
+		{% if form.errors %}
+			<p>密码和用户名不匹配，请重新输入。</p>
+		{% else %}
+			<p>请填写以下表单来登录，如果没有账号的话可以点击<a href="{% url 'register' %}">注册</a>。</p>
+		{% endif %}
+		
+
+	
+		<div class="login-form">
+			<form action="{% url 'login' %}" method="post">{% csrf_token %}
+				{{ form.as_p }}
+				<input type="hidden" name="next" value="{{ next }}" />
+				<p><input type="submit" value="Log-in"></p>
+			</form>
+			<br/>
+			<p><a href="{% url 'password_reset' %}">忘记密码了吗a？</a></p>
+		</div>
+	</div>
+{% endblock %}
