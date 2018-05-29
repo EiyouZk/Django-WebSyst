@@ -1,0 +1,364 @@
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta name="renderer" content="webkit" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>{% block title %}{% trans "雷盾" %}{% endblock %}</title>
+	
+	<link rel="shortcut icon" href="{% static 'images/radar.ico' %}">
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">	
+	<!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <!-- <link rel="stylesheet" href="{% static 'css/ionicons.min.css' %}"> -->
+    <!-- <link rel="stylesheet" href="{% static 'css/owl.carousel.css' %}"> -->
+    <!-- <link rel="stylesheet" href="{% static 'css/owl.theme.css' %}"> -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<style type="text/css">p input{float:left}</style>
+	<style type="text/css">.ttitle{font-size:18px;color:#463131;vertical-align:bottom;}</style>
+	<script src="{% static 'js/jquery.min.js' %}"></script>
+	<script src="{% static 'js/base64.js' %}"></script>
+	<script>		
+		function pageScroll()
+		{
+			//把内容滚动指定的像素数（第一个参数是向右滚动的像素数，第二个参数是向下滚动的像素数）
+			window.scrollBy(0,-200);
+			//延时递归调用，模拟滚动向上效果
+			scrolldelay = setTimeout('pageScroll()',100);
+			//获取scrollTop值，声明了DTD的标准网页取document.documentElement.scrollTop，否则取document.body.scrollTop；因为二者只有一个会生效，另一个就恒为0，所以取和值可以得到网页的真正的scrollTop值
+			var sTop=document.documentElement.scrollTop+document.body.scrollTop;
+			//判断当页面到达顶部，取消延时代码（否则页面滚动到顶部会无法再向下正常浏览页面）
+			if(sTop==0) clearTimeout(scrolldelay);
+		}
+
+	
+		<!-- 两个div切换 -->
+		var tt;
+		function move()
+		{
+			var obj = document.getElementById('changeAction');
+			if(parseInt(obj.style.left) < 0){
+				obj.style.left = parseInt(obj.style.left) + 10 + "px";  
+			}
+		}
+		
+		function move2()
+		{
+			var obj = document.getElementById('changeAction');
+			if(parseInt(obj.style.left) > - 800){
+				obj.style.left = parseInt(obj.style.left) - 10 + "px";  
+			}
+		}
+		function button1click()
+		{
+			clearInterval(tt);
+			tt = setInterval('move()',1);
+		}
+		function button2click()
+		{
+			clearInterval(tt);
+			tt=setInterval('move2()',1);
+		}
+		
+		<!-- 设置中心两个切换 -->
+
+		function cut(id) 
+		{
+			// 切换LI的背景
+			//$("#left_nav_ul>li").removeClass();
+			var prefix = id.substring(0, id.lastIndexOf("_"));
+			for (var i = 0; i < 100; i++) {
+				var liId = prefix + "_" + i;
+				var li = $("#"+liId);
+				if (li !== undefined) {
+					li.removeClass();
+				} else {
+					break;
+				}
+			}
+			$("#"+id).addClass("nav_left_bg");
+			
+			for (var i = 0; i < 100; i++) {
+				var tableId = "right_alarm_type_" + i;
+				if ($("#"+tableId) !== undefined) {
+					$("#"+tableId+">tbody>tr").hide();	
+					$("#title_tr").show();
+					$("#btn_tr").show();
+				}
+			}
+			// 处理右边的告警类型
+			for (var i = 0; i < 100; i++) {
+				var trId1 = id + "_" + i;
+				var tr = $("#"+trId1);
+				if (tr !== undefined) {
+					tr.show();
+				} else {
+					return;
+				}
+				if (i == 0) {
+					$("#"+trId1+">td>i").attr("class", "btn_jianhao_a");
+					for (var j = 0; j < 100; j++) {
+						var trId2 = trId1 + "_" + j;
+						var tr = $("#"+trId2);
+						if (tr !== undefined) {
+							tr.show();
+						} else {
+							break;
+						} 
+					}
+				} else {
+					$("#"+trId1+">td>i").attr("class", "btn_jiahao_a");
+				}
+			}
+			return false;
+		}
+
+			
+		function openOrCloseAlarmType(id) 
+		{
+			var td = $("#"+id+">td>i");
+			var cntClass = td.attr("class");			
+			var openOrClose; // 1表示开启,2表示关闭
+			if (cntClass == "btn_jianhao_a") {
+				openOrClose = 2;
+				td.attr("class", "btn_jiahao_a");
+			} else {
+				openOrClose = 1;
+				td.attr("class", "btn_jianhao_a");
+			}
+			$("#"+id).nextAll("tr").each(function() {
+				if (this.id.substring(0, id.length) == id) {
+					//alert(this.id);
+					if (openOrClose == 1) {
+						$(this).css("display", "");
+					} else {
+						$(this).css("display", "none");
+					}
+				}
+			});
+			return false;
+		}
+
+		$(document).ready(function()
+		{
+
+			/*
+			 * 替换所有匹配exp的字符串为指定字符串
+			 * @param exp 被替换部分的正则
+			 * @param newStr 替换成的字符串
+			 */
+			String.prototype.replaceAll = function (exp, newStr)
+			{
+				return this.replace(new RegExp(exp, "gm"), newStr);
+			};
+
+			/**
+			 * 原型：字符串格式化
+			 * @param args 格式化参数值
+			 */
+			String.prototype.format = function(args)
+			{
+				var result = this;
+				if (arguments.length < 1) {
+					return result;
+				}
+
+				var data = arguments; // 如果模板参数是数组
+				if (arguments.length == 1 && typeof (args) == "object") {
+					// 如果模板参数是对象
+					data = args;
+				}
+				for ( var key in data) {
+					var value = data[key];
+					if (undefined != value) {
+						result = result.replaceAll("\\{" + key + "\\}", value);
+					}
+				}
+				return result;
+			}
+
+			<!--function downloadFile(url)-->
+			<!--{-->
+				<!--try{-->
+					<!--var elemIF = document.createElement("iframe");-->
+					<!--elemIF.src = url;-->
+					<!--elemIF.style.display = "none";-->
+					<!--document.body.appendChild(elemIF);-->
+				<!--}catch(e)-->
+				<!--{-->
+					<!--alert('下载安装包失败');-->
+				<!--}-->
+			<!--}-->
+
+			<!--$("#downclient").click(function()-->
+			<!--{-->
+				<!--try{-->
+					<!--var elemIF = document.createElement("iframe");-->
+					<!--var user = '{{request.user}}';-->
+					<!--var str='Setup_';-->
+					<!--str += user;-->
+					<!--str += '.exe';-->
+
+					<!--var template1="/static/nsis/{0}";-->
+					<!--var url=template1.format(str);-->
+					<!--downloadFile(url);-->
+				<!--}catch(e)-->
+				<!--{-->
+				<!--}-->
+
+			<!--});-->
+
+		});
+
+		window.onload = function()
+		{
+			{% if request.user.is_authenticated %}
+                var zip = 'nsis/Radar_' + '{{request.user}}' + '.exe';
+                var href = {% static zip %} + zip;
+                document.getElementById("downclient").setAttribute("href",href);
+            {% endif %}
+		}
+
+		/**
+		 * 替换所有匹配exp的字符串为指定字符串
+		 * @param exp 被替换部分的正则
+		 * @param newStr 替换成的字符串
+		 */
+		String.prototype.replaceAll = function (exp, newStr)
+		{
+			return this.replace(new RegExp(exp, "gm"), newStr);
+		};
+
+		/**
+		 * 原型：字符串格式化
+		 * @param args 格式化参数值
+		 */
+		String.prototype.format = function(args)
+		{
+			var result = this;
+			if (arguments.length < 1) {
+				return result;
+			}
+
+			var data = arguments; // 如果模板参数是数组
+			if (arguments.length == 1 && typeof (args) == "object") {
+				// 如果模板参数是对象
+				data = args;
+			}
+			for ( var key in data) {
+				var value = data[key];
+				if (undefined != value) {
+					result = result.replaceAll("\\{" + key + "\\}", value);
+				}
+			}
+			return result;
+		}
+
+		//弹出隐藏层
+		function ShowDiv(show_div,bg_div)
+		{
+		    document.getElementById(show_div).style.display='block';
+			<!--document.getElementById(bg_div).style.display='block';-->
+		}
+
+		//关闭弹出层
+		function CloseDiv(show_div,bg_div)
+		{
+            document.getElementById(show_div).style.display='none';
+			<!--document.getElementById(bg_div).style.display='none';-->
+		}
+
+		function checkLogin()
+		{
+            {% if not request.user.is_authenticated %}
+                alert("请先登录，再下载产品!");
+                window.location.href = "{% url 'login' %}";
+            {% endif %}
+		}
+		
+		{% block  script %}
+		{% endblock %}	
+	</script>  
+</head>
+<body>
+	<div style="width:100%;height:100%;MARGIN-RIGHT:auto;MARGIN-LEFT:auto;">
+		<div>
+			<table class="headtable grad1">
+				<tr>
+					<td style="width:12%" />
+					<td style="width:10%"><a href="{% url 'index' %}"><img style="float:left;padding-top:5px;height:55px;" src="{% static 'images/logo.png' %}" alt=""/></a></td>
+					<td style="width:15%" />
+					<td style="width:7%"><a href="{% url 'index' %}">首页</a></td>
+					<td style="width:7%"><a href="{% url 'service' %}">服务</a></td>
+					<td style="width:7%"><a href="{% url 'shoppage' %}">购买</a></td>
+					<td style="width:10%">
+					<a target="_blank" href="{% url 'cloudset' %}">云设置中心</a></td>
+					<td style="width:10%">
+					<a target="_blank" href="http://www.gtshgame.com/">关于我们</a></td>
+					{% if 'login' != section and 'uninstall' != section  %}
+                    <td style="width:6%">
+                        {% if request.user.is_authenticated %}
+                        <div class="btn-group">
+                          <button style="padding: 10px 25px 10px 25px;width: 150px;overflow: hidden;text-overflow: ellipsis;" class="btn btn-default dropdown-toggle userdropdown" data-toggle="dropdown" type="button" title="{{request.user}}">{{request.user}}<span class="caret"></span></button>
+                          <ul class="dropdown-menu" style="background: #e6e6e6;min-width:unset;width: 150px;">
+                              <!--<li><a style="color:black;font-size: 18px;" href="{% url 'edit' %}">修改个人信息</a></li>-->
+                              <li><a style="color:black;font-size: 18px;" href="{% url 'passwordchange' %}">修改密码</a></li>
+                              <li><a style="color:black;font-size: 18px;" href="{% url 'signout' %}">注销登录</a></li>
+                          </ul>
+                        </div>
+                        {% else %}
+                        <a href="{% url 'login' %}">登录</a>
+                        {% endif %}
+                    </td>
+					{% endif %}
+					<td style="width:14%"><a href="#" onclick="checkLogin();" class="download" id="downclient">下载产品</a></td>
+				</tr>
+			</table>
+		</div>	
+		
+		<div class="wrapper">
+			<div id="WaitDone" class="white_content" style="top: 150;border-bottom: 1px rgb(230, 189, 189) solid;height:200px;">
+				<div style="cursor:default;height:46px;background: #436fac;">
+					<span style="font-size: 25px;padding-left:12px;color:white;padding-top: 12px;">客户端下载</span>
+					<a style="float:right;" href="javascript:;" onclick="CloseDiv('WaitDone','fade')"><img style="padding-right:12px;padding-top:12px;" src="{% static 'images/close.png' %}" alt="退出"/></a>
+				</div>
+				<div style="cursor:default;padding-top: 20px;">
+					<div>
+						<span style="font-size: 20px;padding-top: 12px;">正在下载，请稍等：</span>
+						<div class="progress" style="width:90%;margin: auto;margin-top: 20px;">
+							<div class="progress-bar progress-bar-striped active" style="width: 100%;background-color: #436fac;">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% block content %}
+			{% endblock %}
+		</div>
+		
+		<div class="footer" style="padding-top:86px;">
+			<div style="text-align:center;">
+				  <a style="color:#999999" target="_blank"  href="http://www.gtshgame.com/" class="margin-bottom-30 margin-top-30">重庆格泰尚恒网络安全技术有限公司</a>
+				  <p>电话：+86 023 9999 9999 Email：cqgtsh@gmail.com</p>
+				  <p>© Copyright 2017 格泰尚恒. All right reserved.</p>
+			</div>
+		</div>
+		<div id="scroll-top-div" class="scroll-top-div">
+		  <div class="scroll-top-icon-container">
+			<a onclick="pageScroll()"><img class="img-responsive" src="{% static 'images/up.png' %}" alt=""/></a>
+		  </div>
+		</div>
+		
+		
+		<!-- jQuery first, then Tether, then Bootstrap JS. -->
+
+		<script src="{% static 'js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+		<script src="{% static 'js/script.js' %}"></script>
+		<script type="text/javascript" src="{% static 'js/echarts.js' %}"></script>
+		<script type="text/javascript" src="{% static 'My97DatePicker/WdatePicker.js' %}"></script>
+	</div>
+</body>
+</html>

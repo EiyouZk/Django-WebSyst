@@ -1,0 +1,513 @@
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="renderer" content="webkit" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>{% block title %}{% trans "雷盾" %}{% endblock %}</title>
+	
+	<link rel="shortcut icon" href="{% static 'images/radar.ico' %}">
+    
+	
+	<!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+	<link href="{% static 'css/base.css' %}" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="{% static 'css/ionicons.min.css' %}"> -->
+    <!-- <link rel="stylesheet" href="{% static 'css/owl.carousel.css' %}"> -->
+    <!-- <link rel="stylesheet" href="{% static 'css/owl.theme.css' %}"> -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<link href="{% static 'css/city-picker.css' %}" rel="stylesheet" type="text/css" />
+	<style type="text/css">p input{float:left}</style>
+	<style type="text/css">.ttitle{font-size:18px;color:#463131;vertical-align:bottom;}</style>
+	<script src="{% static 'js/jquery.min.js' %}"></script>
+	<script src="{% static 'js/jquery.table2excel.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/protectset.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/dict.js' %}"></script>
+	<script src="http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js"></script>
+	<script type="text/javascript">//<![CDATA[
+		function connect_websocket() {
+            if (window.s) {
+                window.s.close()
+            }
+            /*创建socket连接*/
+            var socket = new WebSocket("ws://" + window.location.host + "/account/echo");
+			<!-- var socket = new WebSocket("ws://192.168.60.26:8000"); -->
+            socket.onopen = function () {
+                console.log('WebSocket open');//成功连接上Websocket
+            };
+            socket.onmessage = function (e) {
+                console.log('message: ' + e.data);//打印出服务端返回过来的数据
+                $('#messagecontainer').prepend('<p>' + e.data + '</p>');
+            };
+            // Call onopen directly if socket is already open
+            if (socket.readyState == WebSocket.OPEN) socket.onopen();
+            window.s = socket;
+        }
+        function send_message() {
+            //如果未连接到websocket
+            if (!window.s) {
+                alert("websocket未连接.");
+            } else {
+                window.s.send($('#message').val());//通过websocket发送数据
+            }
+        }
+        function close_websocket() {
+            if (window.s) {
+                window.s.close();//关闭websocket
+                console.log('websocket已关闭');
+            }
+        }
+
+    //]]>
+	</script>
+	<script>
+	
+		//弹出下拉菜单层
+		function showMoreDiv(sup_menu,sub_menu)
+		{
+
+		    if('block' == document.getElementById('DelGroup').style.display)
+		    {
+		    	alert('删除分组的窗口已经打开，请先关闭！');
+		    	return;
+		    }
+
+		    if('block' == document.getElementById('AddGroup').style.display)
+		    {
+		    	alert('新增分组的窗口已经打开，请先关闭！');
+		    	return;
+		    }
+
+		    var mLeft = document.getElementById('moveto').offsetLeft;
+
+		    document.getElementById(sub_menu).style.left=mLeft+'px';
+
+			document.getElementById(sub_menu).style.display='block';
+			document.getElementById(sup_menu).style.color='red';
+		}; 
+		
+		//隐藏下拉菜单层  
+		function hideMoreDiv(sup_menu,sub_menu){
+			document.getElementById(sub_menu).style.display='none';
+			document.getElementById(sup_menu).style.color='unset'; 
+		};
+
+		function checkadddiv(str)
+		{
+			var divdi = document.getElementById(str);
+			if('block' == document.getElementById(str).style.display)
+			{
+				return true;
+			}
+		}
+
+
+		var ProtectShowTypeArray = []
+
+		//弹出隐藏层
+		function ShowDiv(show_div,bg_div,type)
+		{
+			<!--设置中心的弹出窗口限制-->
+			if('block' == document.getElementById(show_div).style.display)
+			{
+				alert('窗口已经打开，请勿重复开启！');
+				<!--window.location.reload();-->
+				return;
+			}
+
+
+			if(show_div.indexOf("_protect") != -1 )
+			{
+				var ProtectShowType = ProtectShowTypeArray[0];
+				if(0 != ProtectShowTypeArray.length )
+				{
+					var ProtectShowType = ProtectShowTypeArray[0];
+					if(ProtectShowType!=type)
+					{
+						alert('设置中心其它窗口已经打开，请先关闭！');
+						return;
+					}
+				}
+
+				ProtectShowTypeArray.push(type);
+				console.log(ProtectShowTypeArray);
+			}
+
+			if( 'AddGroup' == show_div )
+			{
+				if('block' == document.getElementById('DelGroup').style.display)
+				{
+					alert('删除分组的窗口已经打开，请先关闭！');
+					return;
+				}
+			}
+
+			if( 'DelGroup' == show_div )
+			{
+				if('block' == document.getElementById('AddGroup').style.display)
+				{
+					alert('增加分组的窗口已经打开，请先关闭！');
+					return;
+				}
+			}
+
+			document.getElementById(show_div).style.display='block';
+			if('bkfade' == bg_div)
+			{
+			    document.getElementById(bg_div).style.display='block';
+			}
+		};
+		//关闭弹出层
+		function CloseDiv(show_div,bg_div)
+		{
+			if(show_div.indexOf("_protect") != -1 )
+			{
+				ProtectShowTypeArray.pop();
+				if(0 == ProtectShowTypeArray.length)
+				{
+					ProtectShowType = '';
+				}
+				console.log(ProtectShowTypeArray);
+			}
+
+			if('file_prot_protect_set' == show_div)
+			{
+				if(checkadddiv('file_prot_protect_add'))
+				{
+					return;
+				}
+			}
+
+			if('registry_prot_protect_set' == show_div)
+			{
+				if(checkadddiv('registry_prot_protect_add'))
+				{
+					return;
+				}
+			}
+
+			if('process_behavior_protect_set' == show_div)
+			{
+				if(checkadddiv('process_behavior_protect_add'))
+				{
+					return;
+				}
+			}
+
+			if('whitelist_access_control_protect_set' == show_div)
+			{
+				if(checkadddiv('login_protIp_protect_add'))
+				{
+					return;
+				}
+				if(checkadddiv('login_protName_protect_add'))
+				{
+					return;
+				}
+			}
+
+			if('Web_firwall_protect_set' == show_div)
+			{
+				if(checkadddiv('Webfirwall_URLwhitelist_protect_set'))
+				{
+					return;
+				}
+			}
+
+			if('ARPfirwall_protect_set' == show_div)
+			{
+				if(checkadddiv('ARPfirwall_gateway_protect_set'))
+				{
+					return;
+				}
+			}
+
+			if('port_security_protect_set' == show_div)
+			{
+				if(checkadddiv('port_security_protect_add'))
+				{
+					return;
+				}
+			}
+
+			if('super_blacklist_protect_set' == show_div)
+			{
+				if(checkadddiv('super_blacklist_protect_add'))
+				{
+					return;
+				}
+			}
+
+			if('super_whitelist_protect_set' == show_div)
+			{
+				if(checkadddiv('super_whitelist_protect_add'))
+				{
+					return;
+				}
+			}
+
+			document.getElementById(show_div).style.display='none';
+			if('bkfade' == bg_div)
+			{
+			    document.getElementById(bg_div).style.display='none';
+			}
+		};
+		
+		 //打开添加服务器引导窗口
+		function addServerGuide(){				
+			if ($("#TB_window").length > 0) {
+				return;
+			}
+			$("#pm25_div, #yc_top_div").css("z-index", 1000);
+			 //获得窗口的垂直位置 
+			
+			window.open("../../account/addserver", "newwindow", "height=550, width=720, top=400, left=600")&nbsp; //写成一行
+		}
+
+		
+		function sendmess()
+		{
+			var socket = new WebSocket("ws://" + window.location.host + "/account/echo/");
+			console.log(socket);
+			socket.onopen = function () {
+				console.log('WebSocket open');//成功连接上Websocket
+				socket.send($('#message').val());//发送数据到服务端
+			};
+			socket.onmessage = function (e)
+			{
+				console.log('message: ' + e.data);//打印服务端返回的数据
+				$('#messagecontainer').prepend('<p>' + e.data + '</p>');
+			};
+		
+		}
+	
+		function pageScroll(){
+			//把内容滚动指定的像素数（第一个参数是向右滚动的像素数，第二个参数是向下滚动的像素数）
+			window.scrollBy(0,-200);
+			//延时递归调用，模拟滚动向上效果
+			scrolldelay = setTimeout('pageScroll()',100);
+			//获取scrollTop值，声明了DTD的标准网页取document.documentElement.scrollTop，否则取document.body.scrollTop；因为二者只有一个会生效，另一个就恒为0，所以取和值可以得到网页的真正的scrollTop值
+			var sTop=document.documentElement.scrollTop+document.body.scrollTop;
+			//判断当页面到达顶部，取消延时代码（否则页面滚动到顶部会无法再向下正常浏览页面）
+			if(sTop==0) clearTimeout(scrolldelay);
+		}
+
+	
+		<!-- 两个div切换 -->
+		var tt;
+		function move(){
+			var obj = document.getElementById('changeAction');
+			if(parseInt(obj.style.left) < 0){
+				obj.style.left = parseInt(obj.style.left) + 10 + "px";  
+			}
+		}
+		function move2(){
+			var obj = document.getElementById('changeAction');
+			if(parseInt(obj.style.left) > - 800){
+				obj.style.left = parseInt(obj.style.left) - 10 + "px";  
+			}
+		}
+		function button1click(){
+			clearInterval(tt);
+			tt = setInterval('move()',1);
+		}
+		function button2click(){
+			clearInterval(tt);
+			tt=setInterval('move2()',1);
+		}				
+		
+		<!-- 设置中心两个切换 -->
+
+		function cut(id) 
+		{
+			// 切换LI的背景
+			//$("#left_nav_ul>li").removeClass();
+			var prefix = id.substring(0, id.lastIndexOf("_"));
+			for (var i = 0; i < 100; i++) {
+				var liId = prefix + "_" + i;
+				var li = $("#"+liId);
+				if (li !== undefined) {
+					li.removeClass();
+				} else {
+					break;
+				}
+			}
+			$("#"+id).addClass("nav_left_bg");
+			
+			for (var i = 0; i < 100; i++) {
+				var tableId = "right_alarm_type_" + i;
+				if ($("#"+tableId) !== undefined) {
+					$("#"+tableId+">tbody>tr").hide();	
+					$("#title_tr").show();
+					$("#btn_tr").show();
+				}
+			}
+			// 处理右边的告警类型
+			for (var i = 0; i < 100; i++) {
+				var trId1 = id + "_" + i;
+				var tr = $("#"+trId1);
+				if (tr !== undefined) {
+					tr.show();
+				} else {
+					return;
+				}
+				if (i == 0) {
+					$("#"+trId1+">td>i").attr("class", "btn_jianhao_a");
+					for (var j = 0; j < 100; j++) {
+						var trId2 = trId1 + "_" + j;
+						var tr = $("#"+trId2);
+						if (tr !== undefined) {
+							tr.show();
+						} else {
+							break;
+						} 
+					}
+				} else {
+					$("#"+trId1+">td>i").attr("class", "btn_jiahao_a");
+				}
+			}
+			return false;
+		}
+
+			
+		function openOrCloseAlarmType(id) 
+		{
+			<!--alert(id);-->
+			var td = $("#"+id+">td>i");
+			var cntClass = td.attr("class");			
+			var openOrClose; // 1表示开启,2表示关闭
+			if (cntClass == "btn_jianhao_a") {
+				openOrClose = 2;
+				td.attr("class", "btn_jiahao_a");
+			} else {
+				openOrClose = 1;
+				td.attr("class", "btn_jianhao_a");
+			}
+			
+			if(id == 'type_fileprot_2')
+			{
+				if (openOrClose == 1) 
+				{
+					document.getElementById('file_prot_button').style.display='block'; 
+				}
+				else
+				{
+					document.getElementById('file_prot_button').style.display='none'; 
+				}
+			}			
+			
+			$("#"+id).nextAll("tr").each(function() 
+			{
+				if (this.id.substring(0, id.length) == id) 
+				{
+					<!--alert(this.id);-->
+					if (openOrClose == 1) {
+						$(this).css("display", "");
+						$(this).attr("class", "");
+					} else {
+						$(this).css("display", "none");
+						$(this).attr("class", "display_none");
+					}
+				}
+			});			
+			
+			return false;
+		}
+
+		/**
+		 * 替换所有匹配exp的字符串为指定字符串
+		 * @param exp 被替换部分的正则
+		 * @param newStr 替换成的字符串
+		 */
+		String.prototype.replaceAll = function (exp, newStr)
+		{
+			return this.replace(new RegExp(exp, "gm"), newStr);
+		};
+
+		/**
+		 * 原型：字符串格式化
+		 * @param args 格式化参数值
+		 */
+		String.prototype.format = function(args)
+		{
+			var result = this;
+			if (arguments.length < 1) {
+				return result;
+			}
+
+			var data = arguments; // 如果模板参数是数组
+			if (arguments.length == 1 && typeof (args) == "object") {
+				// 如果模板参数是对象
+				data = args;
+			}
+			for ( var key in data) {
+				var value = data[key];
+				if (undefined != value) {
+					result = result.replaceAll("\\{" + key + "\\}", value);
+				}
+			}
+			return result;
+		}
+			
+		{% block  script%}
+		{% endblock %}
+	</script>
+</head>
+<body>
+	<div style="width:100%;height:100%;MARGIN-RIGHT:auto;MARGIN-LEFT:auto;">
+		<div>
+			<table class="headtable" style="background:#436fac;">
+				<tr>
+					<td style="width:2%" />
+					<td style="width:3%"><a href="{% url 'index' %}"><img style="float:left;height:56px;" src="{% static 'images/clound_set.png' %}" alt=""/></a></td>
+					<td style="width:10%"><a target="_blank" href="{% url 'index' %}">雷盾 · 云设置</a></td>
+					<td {% if section = 'cloudset' %} style="background:rgba(119, 147, 187, 0.5215686274509804);" {% endif %} style="width:5%"><a href="{% url 'cloudset' %}">概况</a></td>
+					<td {% if section = 'securityset' %} style="background:rgba(119, 147, 187, 0.5215686274509804);" {% endif %} style="width:8%"><a href="{% url 'servermanage' %}">设备管理</a></td>
+					<!-- <td style="width:8%"><a href="#">威胁分析</a> -->
+					<!-- </td> -->
+					<td {% if section == 'strategy' %} style="background:rgba(119, 147, 187, 0.5215686274509804);" {% endif %} style="width:8%">
+					<a href="{% url 'strategy' %}"> 安全策略</a>
+					</td>
+					<!-- <td style="width:8%"> -->
+						<!-- <a href="#">安全监控</a> -->
+					<!-- </td> -->
+					<td {% if section = 'setting' %} style="background:rgba(119, 147, 187, 0.5215686274509804);" {% endif %} style="width:8%"><a class="setheadtable_a" href="{% url 'setting' %}">警报设置</a></td>
+					<td {% if section = 'notice' %} style="background:#rgba(119, 147, 187, 0.5215686274509804);" {% endif %} style="width:8%"><a class="setheadtable_a" href="{% url 'notice' %}">历史报警</a></td>
+					<td style="width:36%"></td>
+					<td style="width:8%">
+						<div class="btn-group">
+						  <button style="padding: 10px 25px 10px 25px;width: 150px;overflow: hidden;text-overflow: ellipsis;" class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button" title="{{request.user}}">{{request.user}}<span class="caret"></span></button>
+						  <ul class="dropdown-menu" style="background: #e6e6e6;min-width:unset;width: 150px;">
+							  <!--<li><a style="color:black;font-size: 13px;" href="{% url 'edit' %}">修改个人信息</a></li>-->
+							  <li><a style="color:black;font-size: 13px;" href="{% url 'passwordchange' %}">修改密码</a></li>
+							  <li><a style="color:black;font-size: 13px;" href="{% url 'signout' %}">注销登录</a></li>
+						  </ul>
+						</div>
+					</td>
+					<td style="width:2%"></td>
+					
+				</tr>
+			</table>			
+		</div>
+		<div class="wrapper">
+			 <div id="bkfade" class="black_overlay">  </div>
+			{% block content %}
+			{% endblock %}
+		</div>	
+				
+		<!-- jQuery first, then Tether, then Bootstrap JS. -->
+		
+		<script src="{% static 'js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+		<script src="{% static 'js/script.js' %}"></script>
+		<script src="{% static 'js/city-picker.data.js' %}"></script>
+		<script src="{% static 'js/city-picker.js' %}"></script>
+		<script src="{% static 'js/main.js' %}"></script>
+
+		<script type="text/javascript" src="{% static 'js/echarts.js' %}"></script>
+		<script type="text/javascript" src="{% static 'My97DatePicker/WdatePicker.js' %}"></script>
+	</div>
+</body>
+</html>
