@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+
+{% block title %}雷盾{% endblock %}
+{% block content %}
+    <div class="contentzk grad1">
+		<div class="sliding-card-with-bottom-image text-center">
+		<h2 class="cta-heading text-white">游戏服务器安全软件</h2>
+		<p class="text-white slider-para">一款集服务器安全防护和安全管理为一体的综合性服务器工具</p>
+		<div class="cta-btn-group">
+		  <!--<a style="padding: 10px;" class="btn btn-orange border-none btn-rounded-corner" href="http://192.168.17.1/AutoStart.exe">下载产品<span class="icon-on-button"><i class="ion-ios-cloud-download-outline"></i></span></a>-->
+		  <a target="_blank" class="btn btn-orange btn-rounded-corner" href="{% static 'video/demo.mp4' %}"><i class="ion-ios-play-outline"></i>观看教程</a>
+		</div>
+		<div class="image-container text-center sm-display-none">
+		  <img class="img-responsive" src="{% static 'images/mockuo2.png' %}" alt="">
+		</div>
+		</div>
+	</div>
+	
+    <div class="contentbzk" style="text-align:center;">
+        <div class="feature-wiget">
+          <div class="icon-wraper">
+			<img style="padding-left: 52px;" class="img-responsive" src="{% static 'images/ba1.png' %}" alt="">
+          </div>
+          <div class="content_margin">
+            <h4>网络防火墙</h4>
+			<hr class="hrzkb">
+            <p>通过设置三层防火墙保护，来实时保护服务器的网络安全。包括但不限于DDoS防火墙、ARP防火墙、Web防火墙、应用防火墙。</p>
+          </div>
+        </div>
+        <div class="feature-wiget">
+          <div class="icon-wraper">
+            <img style="padding-left: 52px;" class="img-responsive" src="{% static 'images/ba2.png' %}" alt="">
+          </div>
+          <div class="content_margin">
+            <h4>服务器优化</h4>
+			<hr class="hrzkb">
+            <p>对系统进行漏洞修复、系统账号、目录权限、数据库、注册表、系统垃圾、系统服务、启动优化等操作，提升系统的运行效率。</p>
+          </div>
+        </div>
+        <div class="feature-wiget">
+          <div class="icon-wraper">
+            <img style="padding-left: 52px;" class="img-responsive" src="{% static 'images/ba3.png' %}" alt="">
+          </div>
+          <div class="content_margin">
+            <h4>安全防护</h4>
+			<hr class="hrzkb">
+            <p>安全防护功能用于设置最实用的服务器防护模式。也可以一键设置性能优先或者安全优先模式，也可以自定义设置供用户抉择。</p>
+          </div>
+        </div>
+	</div>
+	
+	<div class="contentczk">
+		<table border="0" width="100%">
+			<tr>
+			<td width="100%" colspan="3">
+				<h3 style="text-align:center;">雷盾安全防护</h3>
+				<hr class="hrzk">
+			</td>
+			</tr>
+			<tr>
+				<td colspan="3" class="">&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="3" class="">&nbsp;</td>
+			</tr>
+			<tr>
+			<td width="45%"><h4 class="service-title">防护设置</h4></td>.
+			<td width="10%">&nbsp;</td>
+			<td width="45%"><h4 class="service-title">端口保护</h4></td>
+			</tr>
+			<tr>
+			<td width="45%"><p class="services-content margin-bottom-25">设置防护、端口保护策略，加上DDoS防火墙、ARP防火墙、Web防火墙、应用防火墙策略。</p></td>
+			<td width="10%">&nbsp;</td>
+			<td width="45%"><p class="services-content margin-bottom-25">通过执行具体的端口保护规则，限制或者允许进程对端口的连接请求，来保护服务器安全。</p></td>
+			</tr>
+			<tr>
+			<td width="45%"><h4 class="service-title">超级白名单</h4></td>
+			<td width="10%">&nbsp;</td>
+			<td width="45%"><h4 class="service-title">安全防护</h4></td>
+			</tr>
+			<tr>
+			<td width="45%"><p class="services-content margin-bottom-25">超级白名单，提供用户手动添加信任 IP 的功能，使指定 IP 或者 IP 段不受防火墙策略和安全策略限制。</p></td>
+			<td width="10%">&nbsp;</td>
+			<td width="45%"><p class="services-content margin-bottom-25">用于设置最实用的服务器防护模式。也可以一键设置性能优先或者安全优先模式，也可以自定义设置。</p></td>
+			</tr>
+		</table>
+	</div>	
+	<div class="contentdzk grad1">
+          <div class="col-md-12 text-center">
+            <h3 class="cta-heading text-white">雷盾安全防护预警</h3>
+            <p class="text-white">通过系统优化、漏洞补丁、系统网络防火墙的功能，确保服务器在运行过程中不受恶意的攻击、破坏，保障服务器正常运行。</p>
+            <div class="cta-btn-group">
+              <!--<a style="padding: 10px;" class="btn btn-orange border-none btn-rounded-corner" href="http://192.168.17.1/AutoStart.exe">下载产品<span class="icon-on-button"><i class="ion-ios-cloud-download-outline"></i></span></a>-->
+              <a style="padding: 10px;" class="btn btn-white gradient-white border-none btn-rounded-corner" href="{% static 'video/demo.mp4' %}">演示Demo<span class="icon-on-button"><i class="ion-ios-arrow-thin-right"></i></span></a>
+            </div>
+          </div>	
+	</div>	
+    <div class="contentezk">
+			<div style="text-align:center;">
+				<h4>产品展示</h4>
+				<hr class="hrzk">
+			</div>
+			<div class="change">
+				<div class="subchange"  style="height: 313px;">
+					<a id="schoolButton" onclick="button1click()"><img  src="{% static 'images/left.png' %}" /></a>
+				</div>
+				<div id="changebox" class="subchange">
+					<div id="changeAction" style="left:0px;">
+					<div id="links">
+						<img class="img-responsive" src="{% static 'images/b1.png' %}" alt="">
+						<p class="card-title">模式选择</p>
+						<p class="card-text">安全优先模式适用于网站服务器，自动设置最适合的安全策略，不可修改。自定义模式，完全根据用户的选择来设置安全策略，可任意开启关闭。</p>
+					</div>		    
+					<div id="links2">
+						<img class="img-responsive" src="{% static 'images/b2.png' %}" alt="">	
+						<p class="card-title">设置中心</p>
+						<p class="card-text">可以进行常规设置、密码保护设置和漏洞修复设置。常规设置：设置开启启动、自保设置、升级设置。密码保护设置：针对本软件的主要功能，进行密码保护功能。</p>
+					</div>		    
+					</div>	  
+				</div>
+				<div class="subchange" style="height: 313px;">
+					<a id="indexButton" onclick="button2click()"><img  src="{% static 'images/right.png' %}" /></a>
+				</div>
+			</div>
+	</div>
+
+	{% endblock %}

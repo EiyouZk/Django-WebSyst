@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+
+{% block title %}12×24服务{% endblock %}
+
+{% block content %}
+	<div class="serviceTop grad1"  style="background-image:url('{% static 'images/service.jpg' %}');background-repeat:no-repeat;background-position: 50% 20%;">
+		<div class="grad1" style="background: #4385f1de;height: 100%;"></div>
+	</div>
+
+	<div class="contentczk">
+		<table border="0" width="100%">
+			<tr>
+				<td width="28%">
+					<div class="servicetypea">
+						<img class="img-responsive" src="{% static 'images/beforsale.png' %}" alt="">
+						<p class="bottom-line" style="padding-top: 42px;">售前垂询</p>
+						<p>强大有效的雷盾售前咨询服务人员，将竭诚为您及您的企业提高贴心的产品咨询、解决方案及其他服务。</p>
+					</div>
+				</td>
+				<td width="4%"/>
+				<td width="4%"/>
+				<td width="28%">
+					<div class="servicetypea">
+						<img class="img-responsive" src="{% static 'images/saling.png' %}" alt="">
+						<p class="bottom-line" style="padding-top: 42px;">销售服务</p>
+						<p>在解决方案选择中，我们专业的技术专员随时为您效劳，对产品进行充分细致的讲解。</p>
+							</div>
+				</td>
+				<td width="4%"/>
+				<td width="4%"/>
+				<td width="28%">
+					<div class="servicetypea">
+						<img class="img-responsive" src="{% static 'images/aftersale.png' %}" alt="">
+						<p class="bottom-line" style="padding-top: 42px;">售后维护</p>
+						<p>166名专业的技术支持人员，将12*24小时待命，全年无休，充分保障您产品的无忧使用和业务的稳定运行。</p>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="servicecontzk">	
+		<table border="0" width="100%" style="text-align:center;padding-top:0px;">		<tr>
+			<td width="100%" colspan="12">
+				<h3 style="text-align:center;">联系我们</h3>
+				<hr class="hrzk">
+			</td>
+			</tr>
+			<tr style="height:50px;">
+				<td colspan="12" class="">&nbsp;</td>
+			</tr>
+			<tr>
+				<td width="28%">
+					<div class="servicetype">
+					   <img src="{% static 'images/dianhua.png' %}" alt="">
+					   <p >电话服务</p>
+					   <span>&nbsp;023-9666-6666</span>
+					   <span>咨询电话：023-9666-6666&nbsp;</span>
+					</div>
+				</td>
+				<td width="4%"/>
+				<td width="4%"/>
+				<td width="28%">
+					<div class="servicetype">
+					   <img src="{% static 'images/qq.png' %}" alt="">
+					   <p>企业QQ</p>
+					   <span>&nbsp;12*24小时在线QQ：23-9666-6666&nbsp;</span>
+					</div>
+				</td>
+				<td width="4%"/>
+				<td width="4%"/>
+				<td width="28%">
+					<div class="servicetype">
+					   <img src="{% static 'images/weixin.png' %}" alt="">
+					   <p>微信服务</p>
+					   <span>&nbsp;官方微信</span>
+					   <span>通过微信也可以故障申报，查询备案&nbsp;</span>
+					</div>
+				</td>
+			</tr>
+			
+		</table>
+	</div>
+	
+	{% endblock %}
+
+{% block domready %}
+    var page = 1;
+    var empty_page = false;
+    var block_request = false;
+
+    $(window).scroll(function() {
+        var margin = $(document).height() - $(window).height() - 200;
+        if  ($(window).scrollTop() > margin && empty_page == false && block_request == false) {
+		    block_request = true;
+		    page += 1;
+		    $.get('?page=' + page, function(data) {
+		        if(data == '')
+		        {
+		            empty_page = true;
+		        }
+		        else {
+                    block_request = false;
+                    $('#image-list').append(data);
+    	        }
+            });
+    	}
+    });
+{% endblock %}

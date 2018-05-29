@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+
+{% block title %}购买计划{% endblock %}
+
+{% block content %}	
+    <div class="contentbuyzk grad1">
+		<div class="text-center" style="padding-top:30px">
+			<h2 class="cta-heading text-white">集服务器安全防护和安全管理为一体</h2>
+			<p class="text-white slider-para">从驱动层直接屏蔽攻击，保护服务器安全</p>
+			<div class="cta-btn-group">
+			  <a class="btn btn-orange border-none btn-rounded-corner" href="{% url 'buy' %}">马上购买<span class="icon-on-button"><i class="ion-ios-cloud-download-outline"></i></span></a>
+			  <a target="_blank" class="btn-video text-white" href="http://wpa.qq.com/msgrd?v=3&uin=546042526&site=qq&menu=yes">咨询更多
+			  <img style="height:15px;" src="{% static 'images/askmore.png'%}"/></a>
+			</div>
+		</div>
+    </div> 	
+	<div class="contentbuytabzk">
+	   <div class="container">
+            <table id="table-2" width="100%" border="0" cellspacing="0" cellpadding="0">				
+				<thead>
+					<div class="linear">
+					<tr style="height:60px">
+						<td colspan="2" style="background:#f7a751;color:white;font-size:28px;">功能介绍</td>
+						<td  style="background:#7077a8;color:white;font-size:28px;">体验版</td>
+						<td  style="background:#766eda;color:white;font-size:28px;">强推版</td>
+					</tr>
+					</div>
+				</thead>				
+				<tbody>
+					<tr>
+						<td rowspan="2" class="table_bt_right">安全管理</td>
+						<td >漏洞风险</td>
+						<td width="33%" >修复功能有限制</td>
+						<td width="33%">无限制</td>
+					</tr>
+					<tr>
+						<td >服务器管理</td>
+						<td >1台</td>
+						<td ><span >按合同规定，</span>支持混合云管理</td>
+					</tr>
+					<tr>
+						<td colspan="4" class="table_bt_gray">&nbsp;</td>
+					</tr>
+					<tr>
+						<td rowspan="3" class="table_bt_right">
+							<p style="color:#fff">安全防护</p>
+							<p style="color:#fff">（纵深防御）</p>
+						</td>
+						<td >网站安全防护(WAF)</td>
+						<td >通用防护规则</td>
+						<td ><span>专业规则，</span>定期更新</td>
+					</tr>
+					<tr>
+						<td >服务器安全防护</td>
+						<td >通用防护规则</td>
+						<td ><span >专业规则，</span>定期更新</td>
+					</tr>
+					<tr>
+						<td >高级防护</td>
+						<td >___ ___</td>
+						<td >入侵监测/变形WebShell监测/进程行为监测</td>
+					</tr>
+					<tr>
+						<td colspan="4" class="table_bt_gray">&nbsp;</td>
+					</tr>
+					<tr>
+						<td rowspan="6" class="table_bt_right">
+							<p style="color:#fff">威胁分析</p>
+							<p style="color:#fff">（安全大数据分析）</p>
+						</td>
+						<td >搜索时间</td>
+						<td >7天</td>
+						<td >90天</td>
+					</tr>
+					<tr>
+						<td >定向攻击分析</td>
+						<td >___ ___</td>
+						<td >
+							<div style="margin:0 auto;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td >攻击源分析</td>
+						<td >___ ___</td>
+						<td >
+							<div style="margin:0 auto;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td >加入黑名单</td>
+						<td >___ ___</td>
+						<td >
+							<div style="margin:0 auto;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td >联动防护策略</td>
+						<td >___ ___</td>
+						<td >
+							<div style="margin:0 auto;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td >被入侵分析</td>
+						<td >___ ___</td>
+						<td >
+							<div style="margin:0 auto;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="4" class="table_bt_gray">&nbsp;</td>
+					</tr>
+					<tr>
+						<td class="table_bt_right">安全策略</td>
+						<td >批量安全策略</td>
+						<td >___ ___</td>
+						<td >
+							<div style="margin:0 auto;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="4" class="table_bt_gray">&nbsp;</td>
+					</tr>
+					<tr>
+						<td rowspan="9" class="table_bt_right">云监控</td>
+						<td >登录监控</td>
+						<td >2个常用地</td>
+						<td >5个常用地</td>
+					</tr>
+					<tr>
+						<td rowspan="2" >进程监控</td>
+						<td >最低10分钟</td>
+						<td ><span >1分钟</span></td>
+					</tr>
+					<tr>
+						<td >告警历史7天</td>
+						<td >告警历史30天</td>
+					</tr>
+					<tr>
+						<td rowspan="2" >资源监控</td>
+						<td >搜索时间7天</td>
+						<td >无限制</td>
+					</tr>
+					<tr>
+						<td >最低10分钟</td>
+						<td >每分钟级</td>
+					</tr>
+					<tr>
+						<td rowspan="2" >性能监控</td>
+						<td >最低10分钟</td>
+						<td >每分钟级</td>
+					</tr>
+					<tr>
+						<td >搜索时间7天</td>
+						<td >无限制</td>
+					</tr>
+					<tr>
+						<td rowspan="2" >可用性监控</td>
+						<td >最低10分钟</td>
+						<td >每分钟级</td>
+					</tr>
+					<tr>
+						<td >搜索时间7天</td>
+						<td >无限制</td>
+					</tr>
+					<tr>
+						<td colspan="4" class="table_bt_gray">&nbsp;</td>
+					</tr>
+					<tr>
+						<td rowspan="2" class="table_bt_right">安全告警及报表</td>
+						<td >短信/Email告警</td>
+						<td >
+							<p>1个手机号、邮箱</p>
+							<p>免费短信100条</p>
+						</td>
+						<td >
+							<p>50个手机号、邮箱</p>
+							<p>免费短信<span >5000条</span></p>
+						</td>
+					</tr>
+					<tr>
+						<td >安全报表</td>
+						<td >&nbsp;</td>
+						<td ><span >周报、月报、年报</span></td>
+					</tr>
+					<tr>
+						<td colspan="4" class="table_bt_gray">&nbsp;</td>
+					</tr>
+					<tr>
+						<td rowspan="5" class="table_bt_right">安全专家服务</td>
+						<td >服务方式</td>
+						<td >技术QQ群/论坛</td>
+						<td >专家一对一人工在线服务</td>
+					</tr>
+					<tr>
+						<td >服务时间</td>
+						<td >不定时</td>
+						<td >7*24在线安全专家服务</td>
+					</tr>
+					<tr>
+						<td >专家服务</td>
+						<td >___ ___</td>
+						<td >专属金牌安全专家提供高级别的安全咨询及应急响应</td>
+					</tr>
+					<tr>
+						<td >安全加固</td>
+						<td >___ ___</td>
+						<td >不定期系统全面性安全加固服务及安全策略调优</td>
+					</tr>
+					<tr>
+						<td>安全巡检</td>
+						<td>___ ___</td>
+						<td>每天不少于3次安全策略巡检、云端安全数据分析、<br/>安全告警排查
+						</td>
+					</tr>
+				</tbody>
+            </table>
+			
+		</div>
+    </div>
+    
+{% endblock %}

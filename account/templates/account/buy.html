@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+
+{% block title %}购买{% endblock %}
+
+{% block content %}
+	<!--sidebar start-->
+      <!--sidebar end-->
+	<div class="contentbuytabzk">
+		<h1 >购买</h1>
+	   <div class="container">
+		<div style="overflow:hidden; padding-left:inherit;background-color:#cedaf2;">
+		<div class="content" id="contentDiv">			
+		<form action="." method="post">{% csrf_token %}
+		  <div class="border" style="background:#f5f5f5;">
+			<div style="margin-bottom:-10px;">
+			  <ul style="list-style:none;padding-left:0px;background-color:#8fb9f6;text-align:center;height:fit-content;    font-size:-webkit-xxx-large;">				
+					<li style="float:left;width:50%;border-right:1px solid #ddd;" class="nav_left_bg" id="type__0"  onclick="return cut(this.id);">
+						<a href="#">体验版</a>
+					</li>				
+					<li id="type__1"  onclick="return cut(this.id);">
+						<a href="#">强推版</a>
+					</li>
+				
+			  </ul>
+			</div>
+			<table width="100%" border="0" align="center" cellpadding="0"
+				cellspacing="0" class="table" style="margin-bottom:0px;" id="right_alarm_type_0">
+				<tbody>
+					<tr id="type__0_0"  onclick="return openOrCloseAlarmType(this.id);">
+						<td class= "ttitle" colspan="4" style="cursor:pointer;">
+							<i class="btn_jianhao_a" style="width:22px;height:16px; float:left"></i>
+							有效期
+						</td>
+					</tr>
+					<tr id="type__0_0_0" >
+						<input id="configIds_10000" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="10000" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>有效期长1年，自购买之日到第二年的当月的后一天。
+						</td>
+					</tr>					
+					<tr id="type__0_1"  onclick="return openOrCloseAlarmType(this.id);">
+						<td class= "ttitle" colspan="4" style="cursor:pointer;">
+							<i class="btn_jiahao_a" style="width:22px;height:16px; float:left"></i>
+							云安全
+						</td>
+					</tr>						
+					<tr id="type__0_1_0" style="display:none;">
+						<input id="configIds_10005" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="10005" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i> 网站安全防护服务(WAF)
+						</td>
+					</tr>
+					
+					<tr id="type__0_1_1" style="display:none;">
+						<input id="configIds_10006" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="10006" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>(云)服务器安全防护服务
+						</td>
+					</tr>
+					
+					<tr id="type__0_1_2" style="display:none;">
+						<input id="configIds_10007" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="10007" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>抗DDOS、CC云服务
+						</td>
+					</tr>					
+					<tr id="type__0_2"  onclick="return openOrCloseAlarmType(this.id);">
+						<td class="ttitle" colspan="4" style="cursor:pointer;">
+							<i class="btn_jiahao_a" style="width:22px;height:16px; float:left"></i>
+							安全服务
+						</td>
+					</tr>
+					<tr id="type__0_2_0" style="display:none;">
+						<input id="configIds_10009" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="10009" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>高级渗透测试服务
+						</td>
+					</tr>
+					<tr id="type__0_2_1" style="display:none;">
+						<input id="configIds_10010" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="10010" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i> 代码审计服务
+						</td>
+					</tr>
+					<tr id="type__0_2_2" style="display:none;">
+						<input id="configIds_10011" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="10011" />
+						<td width="28%" style="padding-left:45px;">
+							<i></i>等级保护服务
+						</td>
+					</tr>
+					
+					<tr id="type__0_2_3" style="display:none;">
+						<input id="configIds_10013" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="10013" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>应急响应服务(防黑处理)
+						</td>
+					</tr>
+					
+					<tr id="type__1_0" style="display:none;" onclick="return openOrCloseAlarmType(this.id);">
+						<td class= "ttitle" colspan="4" style="cursor:pointer;">
+							<i class="btn_jianhao_a" style="width:22px;height:16px; float:left"></i>
+							有效期
+						</td>
+					</tr>
+					<tr id="type__1_0_0" style="display:none;">
+						<input id="configIds_2101" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="2101" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>有效期长2年，自购买之日到第三年的当月的后一天。
+						</td>
+					</tr>
+					<tr id="type__1_1" style="display:none;" onclick="return openOrCloseAlarmType(this.id);">
+						<td class= "ttitle" colspan="4" style="cursor:pointer;">
+							<i class="btn_jiahao_a" style="width:22px;height:16px; float:left"></i>
+							云安全
+						</td>
+					</tr>
+					<tr id="type__1_1_0" style="display:none;">
+						<input id="configIds_3001" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="3001" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>旗舰版套餐升级
+						</td>
+					</tr>
+					<tr id="type__1_1_1" style="display:none;">
+						<input id="configIds_3002" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="3002" />
+						<td width="28%" style="padding-left:45px;">
+							<i></i>(云)服务器安全防护服务
+						</td>
+					</tr>
+					<tr id="type__1_1_2" style="display:none;">
+						<input id="configIds_3003" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="3003" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>网站安全防护服务(WAF)
+						</td>
+					</tr>
+					<tr id="type__1_1_3" style="display:none;">
+						<input id="configIds_3004" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="3004" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>抗DDOS、CC云服务
+						</td>
+					</tr>
+					<tr id="type__1_2" style="display:none;" onclick="return openOrCloseAlarmType(this.id);">
+						<td class= "ttitle" colspan="4" style="cursor:pointer;">
+							<i class="btn_jiahao_a" style="width:22px;height:16px; float:left"></i>
+							安全服务
+						</td>
+					</tr>
+					<tr id="type__1_2_0" style="display:none;">
+						<input id="configIds_7012" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="7012" />
+						<td width="28%" style="padding-left:45px;">
+							<i></i>高级渗透测试服务
+						</td>
+					</tr>					
+					<tr id="type__1_2_1" style="display:none;">
+						<input id="configIds_7013" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="7013" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>代码审计服务
+						</td>
+					</tr>
+					<tr id="type__1_2_2" style="display:none;">
+						<input id="configIds_7013" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="7013" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>等级保护服务
+						</td>
+					</tr>
+					<tr id="type__1_2_3" style="display:none;">
+						<input id="configIds_7013" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="7013" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>应急响应服务(防黑处理)
+						</td>
+					</tr>
+					<tr id="type__1_3" style="display:none;" onclick="return openOrCloseAlarmType(this.id);">
+						<td class= "ttitle" colspan="4" style="cursor:pointer;">
+							<i class="btn_jiahao_a" style="width:22px;height:16px; float:left"></i>
+							私有云服务
+						</td>
+					</tr>				
+					<tr id="type__1_3_0" style="display:none;">
+						<input id="configIds_7001" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="7001" />
+						<td width="28%" style="padding-left:45px;" >
+							<i></i>云垒(云安全平台)
+						</td>
+					</tr>					
+					<tr id="type__1_3_1" style="display:none;">
+						<input id="configIds_7002" type="hidden" value="" />
+						<input name="alarmTypes" type="hidden" value="7002" />
+						<td width="28%"style="padding-left:45px;">
+							<i></i>态势感知(大数据分析)
+
+						</td>
+					</tr>
+				</tbody>
+			</table>			
+		  </div>
+			<div style="padding-top:30px; patext-align:center">
+				<input class="btn_blue_a" type="submit" style="color:#436fac;margin:0 auto;background-color:white;padding-top:initial;" value="购买" />
+			</div>
+		</form>
+		</div> 
+		</div>
+     
+     
+    </div>
+    
+</div>
+
+    </div>
+    
+{% endblock %}

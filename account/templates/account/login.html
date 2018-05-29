@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load staticfiles %}
+
+{% block title %}登录{% endblock %}
+
+{% block  script %}
+	$(document).ready(function()
+	{
+		$("#loginbtn").click(function()
+		{			
+			loginfunc();
+		});	
+
+		$("#id_verify").keydown(function(e)
+		{  
+           if (e.keyCode == 13)
+		   {  
+				loginfunc();
+           }  
+		});
+    });
+
+    function cleanhis()
+    {
+        document.getElementById('username_err').innerHTML = '';
+		document.getElementById('password_err').innerHTML = '';
+        document.getElementById('verify_err').innerHTML = '';
+    }
+
+	function loginfunc()
+	{
+        cleanhis();
+		var b = new Base64();
+		var loginform = document.getElementById('loginform');
+		var passwd = document.getElementById('id_password').value;
+        var username = document.getElementById('id_username').value;
+        var passlen = document.getElementById('id_password').value.length;
+        var code = document.getElementById('id_verify').value;
+
+        var submit = true;
+        if('' == username)
+        {
+            document.getElementById('username_err').innerHTML = '请输入用户名再登录！';
+            submit = false;
+        }
+
+        if('' == passwd)
+        {
+            document.getElementById('password_err').innerHTML = '请输入密码再登录！';
+            submit = false;
+        }
+
+        if(0 == passlen)
+        {
+            document.getElementById('password_err').innerHTML = '请输入密码再登录！';
+            submit = false;
+        }
+		else if(passlen > 16 || passlen < 6)
+		{
+			submit = false;
+            document.getElementById('password_err').innerHTML = '密码不能少于6个字符,不能多于16个字符！';
+		}
+
+        if('' == code)
+        {
+            submit = false;
+            document.getElementById('verify_err').innerHTML = '请输入验证码！';
+        }
+
+        if(submit)
+		{
+            var en_passwd = b.encode(passwd);
+		    document.getElementById('id_password').value = en_passwd;
+            loginform.submit();
+        }
+	}
+
+    function changeCheckCode(ths){
+        ths.src = ths.src +  '?';    <!--改变URL，刷新图片。-->
+    }
+
+    function init()
+	{
+        {% if 'error_code' == error %}
+            document.getElementById('verify_err').innerHTML = '输入的验证码错误，请先重新输入！';
+        {% elif 'error' == error %}
+            document.getElementById('password_err').innerHTML = '密码和用户名不匹配，请重新输入！';
+        {% elif 'changepass' == error %}
+            alert('密码修改成功，请重新登录');
+        {% endif %}
+    }
+
+    //页面加载时执行init()函数
+	window.onload = init;
+{% endblock %}
+
+{% block content %}		
+	<div class="otherpage">
+		<h1 style="width: 150px;">登录</h1>
+		<br/>
+        <p>请填写以下表单来登录，如果没有账号的话可以点击<a href="{% url 'register' %}">注册</a>。</p>
+
+		<div class="login-form">
+			<form id="loginform" action="{% url 'login' %}" method="post">{% csrf_token %}
+				<!-- {{ form.as_p }} -->
+				<p>
+					<label for="id_username">用户名:</label>
+                    <div>
+                        <input id="id_username" name="username" type="text" maxlength="30" style="line-height: 25px;width: 221px;" autocomplete='off' >
+                        <span id="username_err" style="color:red;"></span>
+                    </div>
+				</p>
+				<p>
+					<label for="id_password">密码:</label>
+                    <div>
+                        <input id="id_password" name="password" maxlength="16" type="password" style="line-height: 25px;width: 221px;">
+                        <span id="password_err" style="color:red;"></span>
+                    </div>
+				</p>
+
+                <p>
+                    <label for="id_verify">请输入验证码:</label>
+                    <div>
+                        <input id="id_verify" name="check_code" style="line-height: 25px;float:left;margin-right: 10px;" autocomplete='off'>
+                        <a href="#" id="changeImg" title="看不清，换一张"><img src="{% url 'check_code' %}" onclick="changeCheckCode(this);"></a>
+                        <span id="verify_err" style="color:red;"></span>
+                    </div>
+                </p>
+				<input type="hidden" name="next" value="{{ next }}" />
+				<p>
+					<button id="loginbtn" type="button" style="height: 35px;width: 70px;padding-top: 0px;background: #5998f1;color: white;">登录</button>
+				</p>
+			</form>
+			<br/>
+			<p><a href="{% url 'password_reset' %}">忘记密码了吗？</a></p>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}注册成功{% endblock %}
+
+{% block content %}
+	<div class="otherpage">
+    <h1 style="text-transform: none;">欢迎 {{new_user}}!</h1>
+    <p>您的账号已经创建成功，现在您可以 <a href="{% url 'login' %}">登录</a>了。</p>
+	</div>
+{% endblock %}

@@ -1,0 +1,261 @@
+{% extends "clound_base.html" %}
+{% load static %}
+{% block title %}云设置中心{% endblock %}
+
+{% block  script %}
+    $(document).ready(function()
+	{
+        selectserver();
+    });
+
+    function selectserver()
+    {
+        var obj = document.getElementById("serverselect");
+        var index = obj.selectedIndex;
+        var server = obj.options[index].value;
+
+        $.get("../getnetcount",{'server':server}, function(ret)
+        {
+            var netflow = ret;
+            var netflowarray = netflow.split("&");
+            drawnetcount(netflowarray[0],netflowarray[1]);
+            <!--setTimeout("selectserver()",3000);-->
+        }
+        )
+    }
+
+    function drawnetcount(upNetflow,downNetflow)
+    {
+         <!--网络流量统计-->
+            var timestamp =Date.parse(new Date());
+
+
+            var timearray = [];
+            for(var i=24;i>0;i--)
+            {
+                var msec = timestamp - i*60*60*1000
+                var oldtime = new Date(msec);
+                var time = '{0}.{1}.{2} {3}时'.format(oldtime.getFullYear(),oldtime.getMonth()+1,oldtime.getDate(),oldtime.getHours());
+                timearray.push(time);
+            }
+
+			var arrayUpflow = upNetflow.split(';');
+            var arrayDownflow = downNetflow.split(';');
+			//指定图标的配置和数据
+			var option = {
+				title:{
+					x: 'center',
+					text:'网络流量统计'
+				},
+				tooltip:{
+                    trigger: 'axis'
+                },
+				legend: {
+                    data:['最高流量','最低流量']
+                },
+                calculable : true,
+				xAxis:{
+                    type: 'category',
+                    boundaryGap: false,
+					data:timearray,
+                    <!--坐标轴颜色-->
+                    axisLine:{
+                        lineStyle:{
+                            color:'#5998f1'
+                        }
+                    },
+                    <!--x轴文字旋转-->
+                    axisLabel:{
+                        rotate:30,
+                        interval:0
+                    },
+				},
+				yAxis:{
+					name:'流量统计(单位：M)',
+                    axisLine:{
+                        lineStyle:{
+                            color:'#5998f1'
+                        }
+                    },
+				},
+				series:[{
+					name:'上行网络统计',
+					type:'line',
+                    color:['#5998f1'],
+                    symbol:'circle',
+                    symbolSize:10,
+					itemStyle: {
+						normal: {
+							lineStyle:{
+                            width:2,
+                            type:'solid'  //'dotted'虚线 'solid'实线
+                            }
+						}
+					},
+					data:arrayUpflow,
+                    markPoint:{
+                        data:[
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine:{
+                        data:[
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+				},
+					{
+                    name:'下行网络统计',
+					type:'line',
+                    color:['#fe912a'],
+                    symbol:'circle',
+                    symbolSize:10,
+					itemStyle: {
+						normal: {
+							lineStyle:{
+                            width:2,
+                            type:'dotted'  //'dotted'虚线 'solid'实线
+                            }
+						}
+					},
+					data:arrayDownflow,
+                    markPoint:{
+                        data:[
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine:{
+                        data:[
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+				}],
+			};
+			<!--初始化echarts实例,使用制定的配置项和数据显示图表-->
+			echarts.init(document.getElementById('network_count')).setOption(option);
+
+    }
+	
+	function init() 
+	{  
+		var optionb = {
+			title:{
+				text:''
+			},
+			series:[{
+				name:'攻击类型',
+				type:'pie',
+				radius:'60%',
+				itemStyle: {
+					normal: {
+						color: function(params) {
+							// build a color map as your need.
+							var colorList = ['#e34856','#fe912a','#34b2e4'];
+							return colorList[params.dataIndex]
+						},
+						label: {
+							show: true,
+							position: 'top',
+							formatter: '{b}\n{c}'
+						}
+
+					}
+				},
+				data:[
+					{value:{{Invade}},name:'已被入侵'},
+					<!--{value:{{H_Risk}},name:'高危风险'},-->
+					{value:{{Unusual}},name:'出现异常'},
+					{value:{{Normal}},name:'运行正常'}
+				]
+			}]
+		};
+
+		//初始化echarts实例,使用制定的配置项和数据显示图表
+		echarts.init(document.getElementById('serversummary')).setOption(optionb);
+
+    	<!--页面加载的时候绘制第一台服务器的网络流量统计图-->
+    	drawnetcount('{{initnetUpcount}}','{{initnetDowncount}}');
+	}
+  
+	//页面加载时执行init()函数
+	window.onload = init;
+{% endblock %}
+
+{% block content %}
+<div class="contentsettingzk" >
+	<div style="height:100%;width:100%; background:#f3f7f9;">						
+			<div style="background:#ffffff;height:85%;margin:20px;">			
+				<div style="padding-top:10px;border-bottom: 1px rgb(230, 189, 189) solid;border-top: 1px rgb(230, 189, 189) solid;padding-bottom:10px;">
+					<div style="width:50%;float:left">
+						<div style="height:40px;margin:10px;background: #ca97532e;padding-top:1px;width: 30%;">
+							<h4 style="padding-left:15px;color:#0000008f;">服务器概况</h4>
+						</div>
+						<div style="height:400px;background:#f3f7f9;margin-left: 10px;margin-right: 10px;min-width: 800px;">
+							<div style="width:860px; height:400px;padding-top: 16px;">
+								<div id="serversummary" style="width:600px; height:400px;float:left;">
+								</div>
+								<div style="width:200px; height:345px; float:left; border-left: 2px #9E9E9E  solid;text-align:center;padding-top: 100px;">
+									<p class="indent">已被入侵:<a class="dashboardnum" href="{% url 'servermanage' %}?status=Invade"> {{Invade}} </a>(台);</p>
+									<!--<p class="indent">高危风险:<a class="dashboardnum" href="{% url 'servermanage' %}?status=H_Risk"> {{H_Risk}} </a>(台); </p>-->
+									<p class="indent">出现异常:<a class="dashboardnum" href="{% url 'servermanage' %}?status=Unusual"> {{Unusual}} </a>(台);</p>
+									<p class="indent">运行正常:<a class="dashboardnum" href="{% url 'servermanage' %}?status=Normal"> {{Normal}} </a>(台);</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div style="width:50%;overflow:hidden;padding-left: 3%;">
+						<div style="height:40px;margin:10px;background: #ca97532e;padding-top:1px;width: 30%;">
+							<h4 style="padding-left:15px;color:#0000008f;">攻击概况</h4>
+						</div>
+						<div style="height:400px;background:#f3f7f9;margin-left: 10px;margin-right: 10px;width: 860px;overflow: auto;">
+                            <table style="width: 85%;height: 85%; margin: auto;margin-top: 30px;">
+                                <tr style="border-bottom: 1px #9E9E9E solid;">
+                                    <td style="padding-left:30px;">
+                                        <p style="font-size: 22px;color: #210101b0;"><img style="" src="{% static 'images/hostc.png' %}" alt=""/>被入侵主机</p>
+                                    </td>
+                                    <td style="padding-left:30px;">
+                                        <p style="font-size: 22px;color: #210101b0;"><img style="" src="{% static 'images/attack.png' %}" alt=""/>受到攻击(次)</p>
+                                    </td>
+                                </tr>
+
+                                {% for server in Invadserver%}
+                                <tr>
+                                    <td style="padding-left:50px;">
+                                        <p style="font-size: 18px;color: #210101b0;"><a target="_blank" href="../singleserver/?serverid={{server.id}}">{{server.servername}}</a></p>
+                                    </td>
+                                    <td style="padding-left:50px;">
+                                        <p style="font-size: 18px;color: #210101b0;"><a href="{% url 'notice' %}">{{server.attackcount}}</a></p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+						</div>
+					</div>
+					<div style="height:40px;margin:10px;background: #ca97532e;padding-top:1px;width: 15%;">
+						<h4 style="padding-left:15px;color:#0000008f;">网络统计</h4>
+					</div>
+					<div style="height:580px;background:#f3f7f9;margin-left: 10px;margin-right: 10px;">
+						{% if netcount_server %}
+							<div style="margin: 30px;font-size: 18px;padding-top: 50px;text-align: left;padding-left: 100px;margin-top: unset;">
+                                <span>选择服务器：</span>
+								<select id="serverselect" name="server" class="select" style="margin-top: 10px;padding: 5px;" onchange="selectserver();">
+									{% for server in serverinfo %}
+										<option {% if selectedserver == server.servername %} selected="selected" {% endif %} value="{{server.servername}}">{{server.servername}}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<div id="network_count" style="width:100%;height:430px;"></div>
+						{% else %}
+							<div style="">
+								<span class="dashservername">本账户暂未绑定任何服务器。</span>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>  
+	
+</div>
+{% endblock %}

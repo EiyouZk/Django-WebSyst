@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}创建账号{% endblock %}
+
+{% block  script %}
+	$(document).ready(function()
+	{
+		$("#id_password2").keydown(function(e)
+		{
+           if (e.keyCode == 13)
+		   {
+				registerfunc();
+           }
+		});
+		
+	});
+
+    function cleanhis()
+    {
+        document.getElementById('username_err').innerHTML = '';
+		document.getElementById('email_err').innerHTML = '';
+		document.getElementById('password_err').innerHTML = '';
+		document.getElementById('password2_err').innerHTML = '';
+    }
+
+    function checkEmail()
+    {
+        document.getElementById('email_err').innerHTML = '';
+        var temp = document.getElementById("id_email");
+        var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+        if(!myreg.test(temp.value))
+        {
+            document.getElementById('email_err').innerHTML = '请输入有效的电子邮件地址！';
+            return false;
+        }
+        return true;
+    }
+
+    function registerfunc()
+	{
+        cleanhis();
+		var registerform = document.getElementById('registerform');
+        var username = document.getElementById('id_username').value;
+        var submit = true;
+        if('' == username)
+        {
+            document.getElementById('username_err').innerHTML = '用户名不能为空！';
+            submit = false;
+        }
+
+        var useremail = document.getElementById('id_email').value;
+        if('' == useremail)
+        {
+            document.getElementById('email_err').innerHTML = '电子邮件地址不能为空！';
+            submit = false;
+        }
+
+        if(!checkEmail())
+        {
+            document.getElementById('email_err').innerHTML = '请输入有效的电子邮件地址！';
+            submit = false;
+        }
+
+        var passlen = document.getElementById('id_password').value.length;
+        var password = document.getElementById('id_password').value;
+        if(0 == passlen)
+        {
+            document.getElementById('password_err').innerHTML = '密码不能为空！';
+            submit = false;
+        }
+		else if(passlen > 16 || passlen < 6)
+		{
+			submit = false;
+            document.getElementById('password_err').innerHTML = '密码不能少于6个字符,不能多于16个字符！';
+		}
+
+		var passlenb = document.getElementById('id_password2').value.length;
+        var passwordb = document.getElementById('id_password2').value;
+        if(0 == passlenb)
+        {
+            document.getElementById('password2_err').innerHTML = '密码不能为空！';
+            submit = false;
+        }
+		else if(passlenb > 16 || passlenb < 6)
+		{
+			submit = false;
+            document.getElementById('password2_err').innerHTML = '密码不少于6个字符,不多于16个字符！';
+		}
+
+        if(passlen != passlenb || password != passwordb)
+        {
+            submit = false;
+            document.getElementById('password2_err').innerHTML = '重复密码和密码不一致！';
+        }
+
+        if(submit)
+        {
+            $.get("../makeclientlinux",{'user':username}, function(ret)
+			{
+                console.log(ret);
+			})
+            registerform.submit();
+        }
+	}
+
+	function init()
+	{
+		{% if '' != username_err %}
+			document.getElementById('username_err').innerHTML = '{{username_err}}';
+		{% endif %}
+
+		{% if '' != email_err %}
+			document.getElementById('email_err').innerHTML = '{{email_err}}';
+		{% endif %}
+
+		{% if True == isemailexist %}
+			document.getElementById('email_err').innerHTML = '电子邮件地址已被绑定!';
+		{% endif %}
+
+		{% if '' != password_err %}
+			document.getElementById('password_err').innerHTML = '{{password_err}}';
+		{% endif %}
+
+		{% if '' != password2_err %}
+			document.getElementById('password2_err').innerHTML = '{{password2_err}}';
+		{% endif %}
+
+		{% if True == isshortpass %}
+			document.getElementById('password_err').innerHTML = '密码太短!';
+			document.getElementById('password2_err').innerHTML = '密码太短!';
+		{% endif %}
+	}
+
+	//页面加载时执行init()函数
+	window.onload = init;
+{% endblock %}
+
+{% block content %}
+	<div class="otherpage">
+    <h1 style="width: 230px;">创建账号</h1>
+    <p>填写下列信息以供我们建立新的账号。</p>
+    <form id="registerform" action="." method="post">
+        <!-- {{ user_form.as_p }} -->
+		
+		<p>
+			<label for="id_username"><span style="color:red;">*</span>用户名:</label>
+			<div>
+				<input id="id_username" maxlength="30" name="username" type="text" style="line-height: 25px;width: 221px;">
+				<span id="username_err" style="color:red;"></span>
+			</div>
+			<span class="helptext">不多于30个字符。只能用字母、数字和字符 @/./+/-/_ 。</span>
+		</p>
+		<p>
+			<label for="id_email"><span style="color:red;">*</span>电子邮件地址:</label>
+			<div>
+				<input id="id_email" maxlength="100" name="email" type="email" onblur="checkEmail();" style="line-height: 25px;width: 221px;box-shadow: unset;">
+				<span id="email_err" style="color:red;"></span>
+			</div>
+			<span class="helptext">电子邮件用于密码重置功能。</span>
+		</p>
+		<p>
+			<label for="id_password"><span style="color:red;">*</span>密码:</label>
+			<div>
+				<input id="id_password" name="password" maxlength="16" type="password" style="line-height: 25px;width: 221px;"/>
+				<span id="password_err" style="color:red;"></span>
+			</div>
+			<span class="helptext">密码不能少于6个字符,不能多于16个字符。</span>
+		</p>
+		<p>
+			<label for="id_password2"><span style="color:red;">*</span>重复密码:</label>
+			<div>
+				<input id="id_password2" name="password2" maxlength="16" type="password" style="line-height: 25px;width: 221px;">
+				<span id="password2_err" style="color:red;"></span>
+			</div>
+			<span class="helptext">密码不能少于6个字符,不能多于16个字符。</span>
+		</p>
+		
+        {% csrf_token %}
+		<br/>
+    </form>
+        <button id="loginbtn" onclick="registerfunc();" style="height: 35px;width: 100px;padding-top: 0px;background: #5998f1;color: white;">创建账号</button>
+	</div>
+{% endblock %}
